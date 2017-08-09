@@ -1,0 +1,2119 @@
+   1               		.file	"graphics.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	glcd_set_pixel
+  12               	glcd_set_pixel:
+  13               	.LFB12:
+  14               		.file 1 "glcd/graphics.c"
+   1:glcd/graphics.c **** /**
+   2:glcd/graphics.c ****    \file graphics.c
+   3:glcd/graphics.c ****    \brief Functions relating to graphics. e.g drawing lines, rectangles, circles etc.
+   4:glcd/graphics.c ****    \author Andy Gock
+   5:glcd/graphics.c **** 
+   6:glcd/graphics.c ****    Some functions based on Limor Fried's PCD8544 Arduino library.
+   7:glcd/graphics.c **** 
+   8:glcd/graphics.c ****  */ 
+   9:glcd/graphics.c **** 
+  10:glcd/graphics.c **** /*
+  11:glcd/graphics.c **** 	Copyright (c) 2012, Andy Gock
+  12:glcd/graphics.c **** 
+  13:glcd/graphics.c **** 	Copyright (c) 2012, Adafruit Industries
+  14:glcd/graphics.c **** 
+  15:glcd/graphics.c **** 	All rights reserved.
+  16:glcd/graphics.c **** 
+  17:glcd/graphics.c **** 	Redistribution and use in source and binary forms, with or without
+  18:glcd/graphics.c **** 	modification, are permitted provided that the following conditions are met:
+  19:glcd/graphics.c **** 		* Redistributions of source code must retain the above copyright
+  20:glcd/graphics.c **** 		  notice, this list of conditions and the following disclaimer.
+  21:glcd/graphics.c **** 		* Redistributions in binary form must reproduce the above copyright
+  22:glcd/graphics.c **** 		  notice, this list of conditions and the following disclaimer in the
+  23:glcd/graphics.c **** 		  documentation and/or other materials provided with the distribution.
+  24:glcd/graphics.c **** 		* Neither the name of Andy Gock nor the
+  25:glcd/graphics.c **** 		  names of its contributors may be used to endorse or promote products
+  26:glcd/graphics.c **** 		  derived from this software without specific prior written permission.
+  27:glcd/graphics.c **** 
+  28:glcd/graphics.c **** 	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  29:glcd/graphics.c **** 	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  30:glcd/graphics.c **** 	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  31:glcd/graphics.c **** 	DISCLAIMED. IN NO EVENT SHALL ANDY GOCK BE LIABLE FOR ANY
+  32:glcd/graphics.c **** 	DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  33:glcd/graphics.c **** 	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  34:glcd/graphics.c **** 	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  35:glcd/graphics.c **** 	ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  36:glcd/graphics.c **** 	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  37:glcd/graphics.c **** 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  38:glcd/graphics.c **** */
+  39:glcd/graphics.c **** 
+  40:glcd/graphics.c **** #include <stdio.h>
+  41:glcd/graphics.c **** #include <stdlib.h>
+  42:glcd/graphics.c **** #include <string.h>
+  43:glcd/graphics.c **** #include "glcd.h"
+  44:glcd/graphics.c **** 
+  45:glcd/graphics.c **** /* Based on PCD8544 library by Limor Fried */
+  46:glcd/graphics.c **** void glcd_set_pixel(uint8_t x, uint8_t y, uint8_t color) {
+  15               		.loc 1 46 0
+  16               		.cfi_startproc
+  17               	.LVL0:
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+  47:glcd/graphics.c **** 	if (x > (GLCD_LCD_WIDTH-1) || y > (GLCD_LCD_HEIGHT-1)) {
+  22               		.loc 1 47 0
+  23 0000 8435      		cpi r24,lo8(84)
+  24 0002 00F4      		brsh .L1
+  25               		.loc 1 47 0 is_stmt 0 discriminator 1
+  26 0004 6033      		cpi r22,lo8(48)
+  27 0006 00F4      		brsh .L1
+  28               	.LVL1:
+  29 0008 262F      		mov r18,r22
+  30 000a 2695      		lsr r18
+  31 000c 2695      		lsr r18
+  32 000e 2695      		lsr r18
+  33 0010 E82F      		mov r30,r24
+  34 0012 F0E0      		ldi r31,0
+  35 0014 962F      		mov r25,r22
+  36 0016 9770      		andi r25,lo8(7)
+  37               	.LBB4:
+  38               	.LBB5:
+  48:glcd/graphics.c **** 		/* don't do anything if x/y is outside bounds of display size */
+  49:glcd/graphics.c **** 		return;
+  50:glcd/graphics.c **** 	}
+  51:glcd/graphics.c **** 
+  52:glcd/graphics.c **** 	if (color) {
+  53:glcd/graphics.c **** 		/* Set black */
+  54:glcd/graphics.c **** 		glcd_buffer[x+ (y/8)*GLCD_LCD_WIDTH] |= ( 1 << (y%8));
+  39               		.loc 1 54 0 is_stmt 1
+  40 0018 34E5      		ldi r19,lo8(84)
+  41 001a 239F      		mul r18,r19
+  42 001c E00D      		add r30,r0
+  43 001e F11D      		adc r31,r1
+  44 0020 1124      		clr __zero_reg__
+  45 0022 E050      		subi r30,lo8(-(glcd_buffer))
+  46 0024 F040      		sbci r31,hi8(-(glcd_buffer))
+  47 0026 21E0      		ldi r18,lo8(1)
+  48 0028 30E0      		ldi r19,0
+  49 002a 00C0      		rjmp 2f
+  50               		1:
+  51 002c 220F      		lsl r18
+  52               		2:
+  53 002e 9A95      		dec r25
+  54 0030 02F4      		brpl 1b
+  52:glcd/graphics.c **** 		/* Set black */
+  55               		.loc 1 52 0
+  56 0032 4423      		tst r20
+  57 0034 01F0      		breq .L3
+  58               		.loc 1 54 0
+  59 0036 9081      		ld r25,Z
+  60 0038 922B      		or r25,r18
+  61 003a 9083      		st Z,r25
+  62               	.L4:
+  55:glcd/graphics.c **** 	} else {
+  56:glcd/graphics.c **** 		/* Set white */
+  57:glcd/graphics.c **** 		glcd_buffer[x+ (y/8)*GLCD_LCD_WIDTH] &= ~ (1 << (y%8));
+  58:glcd/graphics.c **** 	}
+  59:glcd/graphics.c **** 
+  60:glcd/graphics.c **** 	glcd_update_bbox(x,y,x,y);
+  63               		.loc 1 60 0
+  64 003c 262F      		mov r18,r22
+  65 003e 482F      		mov r20,r24
+  66               	.LVL2:
+  67 0040 0C94 0000 		jmp glcd_update_bbox
+  68               	.LVL3:
+  69               	.L3:
+  57:glcd/graphics.c **** 	}
+  70               		.loc 1 57 0
+  71 0044 2095      		com r18
+  72 0046 9081      		ld r25,Z
+  73 0048 2923      		and r18,r25
+  74 004a 2083      		st Z,r18
+  75 004c 00C0      		rjmp .L4
+  76               	.LVL4:
+  77               	.L1:
+  78 004e 0895      		ret
+  79               	.LBE5:
+  80               	.LBE4:
+  81               		.cfi_endproc
+  82               	.LFE12:
+  84               	.global	glcd_get_pixel
+  86               	glcd_get_pixel:
+  87               	.LFB13:
+  61:glcd/graphics.c **** }
+  62:glcd/graphics.c **** 
+  63:glcd/graphics.c **** /* Based on PCD8544 library by Limor Fried */
+  64:glcd/graphics.c **** uint8_t glcd_get_pixel(uint8_t x, uint8_t y) {
+  88               		.loc 1 64 0
+  89               		.cfi_startproc
+  90               	.LVL5:
+  91               	/* prologue: function */
+  92               	/* frame size = 0 */
+  93               	/* stack size = 0 */
+  94               	.L__stack_usage = 0
+  65:glcd/graphics.c **** 	if ((x >= GLCD_LCD_WIDTH) || (y >= GLCD_LCD_HEIGHT)) {
+  95               		.loc 1 65 0
+  96 0050 8435      		cpi r24,lo8(84)
+  97 0052 00F4      		brsh .L8
+  98               		.loc 1 65 0 is_stmt 0 discriminator 1
+  99 0054 6033      		cpi r22,lo8(48)
+ 100 0056 00F4      		brsh .L8
+  66:glcd/graphics.c **** 		return 0;
+  67:glcd/graphics.c **** 	}
+  68:glcd/graphics.c **** 	
+  69:glcd/graphics.c **** 	if ( glcd_buffer[x+ (y/8)*GLCD_LCD_WIDTH] & ( 1 << (y%8)) ) {
+ 101               		.loc 1 69 0 is_stmt 1
+ 102 0058 E62F      		mov r30,r22
+ 103 005a E695      		lsr r30
+ 104 005c E695      		lsr r30
+ 105 005e E695      		lsr r30
+ 106 0060 94E5      		ldi r25,lo8(84)
+ 107 0062 E99F      		mul r30,r25
+ 108 0064 F001      		movw r30,r0
+ 109 0066 1124      		clr __zero_reg__
+ 110 0068 E050      		subi r30,lo8(-(glcd_buffer))
+ 111 006a F040      		sbci r31,hi8(-(glcd_buffer))
+ 112 006c E80F      		add r30,r24
+ 113 006e F11D      		adc r31,__zero_reg__
+ 114 0070 8081      		ld r24,Z
+ 115               	.LVL6:
+ 116 0072 90E0      		ldi r25,0
+ 117 0074 6770      		andi r22,lo8(7)
+ 118               	.LVL7:
+ 119 0076 00C0      		rjmp 2f
+ 120               		1:
+ 121 0078 9595      		asr r25
+ 122 007a 8795      		ror r24
+ 123               		2:
+ 124 007c 6A95      		dec r22
+ 125 007e 02F4      		brpl 1b
+ 126 0080 8170      		andi r24,lo8(1)
+ 127 0082 0895      		ret
+ 128               	.LVL8:
+ 129               	.L8:
+  66:glcd/graphics.c **** 		return 0;
+ 130               		.loc 1 66 0
+ 131 0084 80E0      		ldi r24,0
+ 132               	.LVL9:
+  70:glcd/graphics.c **** 		return 1;
+  71:glcd/graphics.c **** 	} else {
+  72:glcd/graphics.c **** 		return 0;
+  73:glcd/graphics.c **** 	}
+  74:glcd/graphics.c **** }
+ 133               		.loc 1 74 0
+ 134 0086 0895      		ret
+ 135               		.cfi_endproc
+ 136               	.LFE13:
+ 138               	.global	glcd_invert_pixel
+ 140               	glcd_invert_pixel:
+ 141               	.LFB14:
+  75:glcd/graphics.c **** 
+  76:glcd/graphics.c **** void glcd_invert_pixel(uint8_t x, uint8_t y) {
+ 142               		.loc 1 76 0
+ 143               		.cfi_startproc
+ 144               	.LVL10:
+ 145 0088 CF93      		push r28
+ 146               	.LCFI0:
+ 147               		.cfi_def_cfa_offset 3
+ 148               		.cfi_offset 28, -2
+ 149 008a DF93      		push r29
+ 150               	.LCFI1:
+ 151               		.cfi_def_cfa_offset 4
+ 152               		.cfi_offset 29, -3
+ 153               	/* prologue: function */
+ 154               	/* frame size = 0 */
+ 155               	/* stack size = 2 */
+ 156               	.L__stack_usage = 2
+ 157 008c C82F      		mov r28,r24
+ 158 008e D62F      		mov r29,r22
+  77:glcd/graphics.c **** 	if ((x >= GLCD_LCD_WIDTH) || (y >= GLCD_LCD_HEIGHT)) {
+ 159               		.loc 1 77 0
+ 160 0090 8435      		cpi r24,lo8(84)
+ 161 0092 00F4      		brsh .L9
+ 162               		.loc 1 77 0 is_stmt 0 discriminator 1
+ 163 0094 6033      		cpi r22,lo8(48)
+ 164 0096 00F4      		brsh .L9
+ 165               	.LVL11:
+ 166               	.LBB8:
+ 167               	.LBB9:
+  78:glcd/graphics.c **** 		return;
+  79:glcd/graphics.c **** 	}
+  80:glcd/graphics.c **** 	glcd_update_bbox(x,y,x,y);
+ 168               		.loc 1 80 0 is_stmt 1
+ 169 0098 262F      		mov r18,r22
+ 170 009a 482F      		mov r20,r24
+ 171 009c 0E94 0000 		call glcd_update_bbox
+ 172               	.LVL12:
+  81:glcd/graphics.c **** 	glcd_buffer[x+ (y/8)*GLCD_LCD_WIDTH] ^= ( 1 << (y%8));
+ 173               		.loc 1 81 0
+ 174 00a0 8D2F      		mov r24,r29
+ 175 00a2 8695      		lsr r24
+ 176 00a4 8695      		lsr r24
+ 177 00a6 8695      		lsr r24
+ 178 00a8 EC2F      		mov r30,r28
+ 179 00aa F0E0      		ldi r31,0
+ 180 00ac 94E5      		ldi r25,lo8(84)
+ 181 00ae 899F      		mul r24,r25
+ 182 00b0 E00D      		add r30,r0
+ 183 00b2 F11D      		adc r31,r1
+ 184 00b4 1124      		clr __zero_reg__
+ 185 00b6 E050      		subi r30,lo8(-(glcd_buffer))
+ 186 00b8 F040      		sbci r31,hi8(-(glcd_buffer))
+ 187 00ba D770      		andi r29,lo8(7)
+ 188               	.LVL13:
+ 189 00bc 21E0      		ldi r18,lo8(1)
+ 190 00be 30E0      		ldi r19,0
+ 191 00c0 00C0      		rjmp 2f
+ 192               		1:
+ 193 00c2 220F      		lsl r18
+ 194               		2:
+ 195 00c4 DA95      		dec r29
+ 196 00c6 02F4      		brpl 1b
+ 197 00c8 8081      		ld r24,Z
+ 198 00ca 8227      		eor r24,r18
+ 199 00cc 8083      		st Z,r24
+ 200               	.LVL14:
+ 201               	.L9:
+ 202               	/* epilogue start */
+ 203               	.LBE9:
+ 204               	.LBE8:
+  82:glcd/graphics.c **** }
+ 205               		.loc 1 82 0
+ 206 00ce DF91      		pop r29
+ 207 00d0 CF91      		pop r28
+ 208               	.LVL15:
+ 209 00d2 0895      		ret
+ 210               		.cfi_endproc
+ 211               	.LFE14:
+ 213               	.global	glcd_draw_line
+ 215               	glcd_draw_line:
+ 216               	.LFB15:
+  83:glcd/graphics.c **** 
+  84:glcd/graphics.c **** /* Bresenham's algorithm - based on PCD8544 library Limor Fried */
+  85:glcd/graphics.c **** void glcd_draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t color) {
+ 217               		.loc 1 85 0
+ 218               		.cfi_startproc
+ 219               	.LVL16:
+ 220 00d4 8F92      		push r8
+ 221               	.LCFI2:
+ 222               		.cfi_def_cfa_offset 3
+ 223               		.cfi_offset 8, -2
+ 224 00d6 9F92      		push r9
+ 225               	.LCFI3:
+ 226               		.cfi_def_cfa_offset 4
+ 227               		.cfi_offset 9, -3
+ 228 00d8 AF92      		push r10
+ 229               	.LCFI4:
+ 230               		.cfi_def_cfa_offset 5
+ 231               		.cfi_offset 10, -4
+ 232 00da BF92      		push r11
+ 233               	.LCFI5:
+ 234               		.cfi_def_cfa_offset 6
+ 235               		.cfi_offset 11, -5
+ 236 00dc CF92      		push r12
+ 237               	.LCFI6:
+ 238               		.cfi_def_cfa_offset 7
+ 239               		.cfi_offset 12, -6
+ 240 00de DF92      		push r13
+ 241               	.LCFI7:
+ 242               		.cfi_def_cfa_offset 8
+ 243               		.cfi_offset 13, -7
+ 244 00e0 EF92      		push r14
+ 245               	.LCFI8:
+ 246               		.cfi_def_cfa_offset 9
+ 247               		.cfi_offset 14, -8
+ 248 00e2 FF92      		push r15
+ 249               	.LCFI9:
+ 250               		.cfi_def_cfa_offset 10
+ 251               		.cfi_offset 15, -9
+ 252 00e4 0F93      		push r16
+ 253               	.LCFI10:
+ 254               		.cfi_def_cfa_offset 11
+ 255               		.cfi_offset 16, -10
+ 256 00e6 1F93      		push r17
+ 257               	.LCFI11:
+ 258               		.cfi_def_cfa_offset 12
+ 259               		.cfi_offset 17, -11
+ 260 00e8 CF93      		push r28
+ 261               	.LCFI12:
+ 262               		.cfi_def_cfa_offset 13
+ 263               		.cfi_offset 28, -12
+ 264 00ea DF93      		push r29
+ 265               	.LCFI13:
+ 266               		.cfi_def_cfa_offset 14
+ 267               		.cfi_offset 29, -13
+ 268               	/* prologue: function */
+ 269               	/* frame size = 0 */
+ 270               	/* stack size = 12 */
+ 271               	.L__stack_usage = 12
+ 272 00ec C82F      		mov r28,r24
+ 273 00ee D62F      		mov r29,r22
+ 274 00f0 142F      		mov r17,r20
+ 275 00f2 A22E      		mov r10,r18
+  86:glcd/graphics.c **** 	uint8_t steep = abs(y1 - y0) > abs(x1 - x0);
+ 276               		.loc 1 86 0
+ 277 00f4 E22E      		mov r14,r18
+ 278 00f6 F12C      		mov r15,__zero_reg__
+ 279 00f8 E61A      		sub r14,r22
+ 280 00fa F108      		sbc r15,__zero_reg__
+ 281 00fc F7FE      		sbrs r15,7
+ 282 00fe 00C0      		rjmp .L12
+ 283 0100 F194      		neg r15
+ 284 0102 E194      		neg r14
+ 285 0104 F108      		sbc r15,__zero_reg__
+ 286               	.L12:
+ 287 0106 C12E      		mov r12,r17
+ 288 0108 D12C      		mov r13,__zero_reg__
+ 289 010a CC1A      		sub r12,r28
+ 290 010c D108      		sbc r13,__zero_reg__
+ 291 010e D7FE      		sbrs r13,7
+ 292 0110 00C0      		rjmp .L13
+ 293 0112 D194      		neg r13
+ 294 0114 C194      		neg r12
+ 295 0116 D108      		sbc r13,__zero_reg__
+ 296               	.L13:
+ 297               	.LVL17:
+  87:glcd/graphics.c **** 	uint8_t dx, dy;
+  88:glcd/graphics.c **** 	int8_t err;
+  89:glcd/graphics.c **** 	int8_t ystep;
+  90:glcd/graphics.c **** 	
+  91:glcd/graphics.c **** 	if (steep) {
+ 298               		.loc 1 91 0
+ 299 0118 CE14      		cp r12,r14
+ 300 011a DF04      		cpc r13,r15
+ 301 011c 04F4      		brge .L14
+ 302 011e 812F      		mov r24,r17
+ 303               	.LVL18:
+ 304               	.LBB10:
+  92:glcd/graphics.c **** 		swap(x0, y0);
+  93:glcd/graphics.c **** 		swap(x1, y1);
+ 305               		.loc 1 93 0
+ 306 0120 1A2D      		mov r17,r10
+ 307 0122 A82E      		mov r10,r24
+ 308               	.LBE10:
+  91:glcd/graphics.c **** 		swap(x0, y0);
+ 309               		.loc 1 91 0
+ 310 0124 8C2F      		mov r24,r28
+ 311               	.LBB11:
+  92:glcd/graphics.c **** 		swap(x0, y0);
+ 312               		.loc 1 92 0
+ 313 0126 CD2F      		mov r28,r29
+ 314               	.LVL19:
+ 315 0128 D82F      		mov r29,r24
+ 316               	.L14:
+ 317               	.LVL20:
+ 318               	.LBE11:
+  94:glcd/graphics.c **** 	}
+  95:glcd/graphics.c **** 	
+  96:glcd/graphics.c **** 	if (x0 > x1) {
+ 319               		.loc 1 96 0
+ 320 012a 1C17      		cp r17,r28
+ 321 012c 00F4      		brsh .L15
+ 322 012e 8D2F      		mov r24,r29
+ 323               	.LBB12:
+  97:glcd/graphics.c **** 		swap(x0, x1);
+  98:glcd/graphics.c **** 		swap(y0, y1);
+ 324               		.loc 1 98 0
+ 325 0130 DA2D      		mov r29,r10
+ 326               	.LVL21:
+ 327 0132 A82E      		mov r10,r24
+ 328               	.LVL22:
+ 329               	.LBE12:
+  96:glcd/graphics.c **** 		swap(x0, x1);
+ 330               		.loc 1 96 0
+ 331 0134 8C2F      		mov r24,r28
+ 332               	.LVL23:
+ 333 0136 C12F      		mov r28,r17
+ 334               	.LVL24:
+ 335 0138 182F      		mov r17,r24
+ 336               	.LVL25:
+ 337               	.L15:
+  99:glcd/graphics.c **** 	}
+ 100:glcd/graphics.c **** 	
+ 101:glcd/graphics.c **** 	glcd_update_bbox( x0, y0, x1, y1 );
+ 338               		.loc 1 101 0
+ 339 013a 2A2D      		mov r18,r10
+ 340 013c 412F      		mov r20,r17
+ 341 013e 6D2F      		mov r22,r29
+ 342 0140 8C2F      		mov r24,r28
+ 343 0142 0E94 0000 		call glcd_update_bbox
+ 344               	.LVL26:
+ 102:glcd/graphics.c **** 
+ 103:glcd/graphics.c **** 	dx = x1 - x0;
+ 345               		.loc 1 103 0
+ 346 0146 812E      		mov r8,r17
+ 347 0148 8C1A      		sub r8,r28
+ 348               	.LVL27:
+ 104:glcd/graphics.c **** 	dy = abs(y1 - y0);
+ 349               		.loc 1 104 0
+ 350 014a 8A2D      		mov r24,r10
+ 351 014c 90E0      		ldi r25,0
+ 352 014e 8D1B      		sub r24,r29
+ 353 0150 9109      		sbc r25,__zero_reg__
+ 354 0152 97FF      		sbrs r25,7
+ 355 0154 00C0      		rjmp .L16
+ 356 0156 9195      		neg r25
+ 357 0158 8195      		neg r24
+ 358 015a 9109      		sbc r25,__zero_reg__
+ 359               	.L16:
+ 360 015c B82E      		mov r11,r24
+ 361               	.LVL28:
+ 105:glcd/graphics.c **** 	
+ 106:glcd/graphics.c **** 	err = dx / 2;
+ 362               		.loc 1 106 0
+ 363 015e 982C      		mov r9,r8
+ 364 0160 9694      		lsr r9
+ 365               	.LVL29:
+ 107:glcd/graphics.c **** 	
+ 108:glcd/graphics.c **** 	if (y0 < y1) {
+ 366               		.loc 1 108 0
+ 367 0162 DA15      		cp r29,r10
+ 368 0164 00F0      		brlo .L23
+ 109:glcd/graphics.c **** 		ystep = 1;
+ 110:glcd/graphics.c **** 	} else {
+ 111:glcd/graphics.c **** 		ystep = -1;
+ 369               		.loc 1 111 0
+ 370 0166 AA24      		clr r10
+ 371 0168 AA94      		dec r10
+ 372               	.LVL30:
+ 373               	.L18:
+ 112:glcd/graphics.c **** 	}
+ 113:glcd/graphics.c **** 	
+ 114:glcd/graphics.c **** 	for (; x0<=x1; x0++) {
+ 374               		.loc 1 114 0 discriminator 1
+ 375 016a 1C17      		cp r17,r28
+ 376 016c 00F4      		brsh .L22
+ 377               	/* epilogue start */
+ 115:glcd/graphics.c **** 		if (steep) {
+ 116:glcd/graphics.c **** 			glcd_set_pixel(y0, x0, color);
+ 117:glcd/graphics.c **** 		} else {
+ 118:glcd/graphics.c **** 			glcd_set_pixel(x0, y0, color);
+ 119:glcd/graphics.c **** 		}
+ 120:glcd/graphics.c **** 		err -= dy;
+ 121:glcd/graphics.c **** 		if (err < 0) {
+ 122:glcd/graphics.c **** 			y0 += ystep;
+ 123:glcd/graphics.c **** 			err += dx;
+ 124:glcd/graphics.c **** 		}
+ 125:glcd/graphics.c **** 	}
+ 126:glcd/graphics.c **** }
+ 378               		.loc 1 126 0
+ 379 016e DF91      		pop r29
+ 380               	.LVL31:
+ 381 0170 CF91      		pop r28
+ 382               	.LVL32:
+ 383 0172 1F91      		pop r17
+ 384               	.LVL33:
+ 385 0174 0F91      		pop r16
+ 386               	.LVL34:
+ 387 0176 FF90      		pop r15
+ 388 0178 EF90      		pop r14
+ 389               	.LVL35:
+ 390 017a DF90      		pop r13
+ 391 017c CF90      		pop r12
+ 392 017e BF90      		pop r11
+ 393 0180 AF90      		pop r10
+ 394               	.LVL36:
+ 395 0182 9F90      		pop r9
+ 396               	.LVL37:
+ 397 0184 8F90      		pop r8
+ 398               	.LVL38:
+ 399 0186 0895      		ret
+ 400               	.LVL39:
+ 401               	.L23:
+ 109:glcd/graphics.c **** 	} else {
+ 402               		.loc 1 109 0
+ 403 0188 AA24      		clr r10
+ 404 018a A394      		inc r10
+ 405               	.LVL40:
+ 406 018c 00C0      		rjmp .L18
+ 407               	.LVL41:
+ 408               	.L22:
+ 116:glcd/graphics.c **** 		} else {
+ 409               		.loc 1 116 0
+ 410 018e 402F      		mov r20,r16
+ 115:glcd/graphics.c **** 		if (steep) {
+ 411               		.loc 1 115 0
+ 412 0190 CE14      		cp r12,r14
+ 413 0192 DF04      		cpc r13,r15
+ 414 0194 04F4      		brge .L19
+ 116:glcd/graphics.c **** 		} else {
+ 415               		.loc 1 116 0
+ 416 0196 6C2F      		mov r22,r28
+ 417 0198 8D2F      		mov r24,r29
+ 418               	.L24:
+ 118:glcd/graphics.c **** 		}
+ 419               		.loc 1 118 0
+ 420 019a 0E94 0000 		call glcd_set_pixel
+ 421               	.LVL42:
+ 120:glcd/graphics.c **** 		if (err < 0) {
+ 422               		.loc 1 120 0
+ 423 019e 9B18      		sub r9,r11
+ 424               	.LVL43:
+ 121:glcd/graphics.c **** 			y0 += ystep;
+ 425               		.loc 1 121 0
+ 426 01a0 97FE      		sbrs r9,7
+ 427 01a2 00C0      		rjmp .L21
+ 122:glcd/graphics.c **** 			err += dx;
+ 428               		.loc 1 122 0
+ 429 01a4 DA0D      		add r29,r10
+ 430               	.LVL44:
+ 123:glcd/graphics.c **** 		}
+ 431               		.loc 1 123 0
+ 432 01a6 980C      		add r9,r8
+ 433               	.LVL45:
+ 434               	.L21:
+ 114:glcd/graphics.c **** 		if (steep) {
+ 435               		.loc 1 114 0
+ 436 01a8 CF5F      		subi r28,lo8(-(1))
+ 437               	.LVL46:
+ 438 01aa 00C0      		rjmp .L18
+ 439               	.L19:
+ 118:glcd/graphics.c **** 		}
+ 440               		.loc 1 118 0
+ 441 01ac 6D2F      		mov r22,r29
+ 442 01ae 8C2F      		mov r24,r28
+ 443 01b0 00C0      		rjmp .L24
+ 444               		.cfi_endproc
+ 445               	.LFE15:
+ 447               	.global	glcd_fill_rect
+ 449               	glcd_fill_rect:
+ 450               	.LFB16:
+ 127:glcd/graphics.c **** 
+ 128:glcd/graphics.c **** void glcd_fill_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t color)
+ 129:glcd/graphics.c **** {
+ 451               		.loc 1 129 0
+ 452               		.cfi_startproc
+ 453               	.LVL47:
+ 454 01b2 5F92      		push r5
+ 455               	.LCFI14:
+ 456               		.cfi_def_cfa_offset 3
+ 457               		.cfi_offset 5, -2
+ 458 01b4 6F92      		push r6
+ 459               	.LCFI15:
+ 460               		.cfi_def_cfa_offset 4
+ 461               		.cfi_offset 6, -3
+ 462 01b6 7F92      		push r7
+ 463               	.LCFI16:
+ 464               		.cfi_def_cfa_offset 5
+ 465               		.cfi_offset 7, -4
+ 466 01b8 8F92      		push r8
+ 467               	.LCFI17:
+ 468               		.cfi_def_cfa_offset 6
+ 469               		.cfi_offset 8, -5
+ 470 01ba 9F92      		push r9
+ 471               	.LCFI18:
+ 472               		.cfi_def_cfa_offset 7
+ 473               		.cfi_offset 9, -6
+ 474 01bc AF92      		push r10
+ 475               	.LCFI19:
+ 476               		.cfi_def_cfa_offset 8
+ 477               		.cfi_offset 10, -7
+ 478 01be BF92      		push r11
+ 479               	.LCFI20:
+ 480               		.cfi_def_cfa_offset 9
+ 481               		.cfi_offset 11, -8
+ 482 01c0 CF92      		push r12
+ 483               	.LCFI21:
+ 484               		.cfi_def_cfa_offset 10
+ 485               		.cfi_offset 12, -9
+ 486 01c2 DF92      		push r13
+ 487               	.LCFI22:
+ 488               		.cfi_def_cfa_offset 11
+ 489               		.cfi_offset 13, -10
+ 490 01c4 EF92      		push r14
+ 491               	.LCFI23:
+ 492               		.cfi_def_cfa_offset 12
+ 493               		.cfi_offset 14, -11
+ 494 01c6 FF92      		push r15
+ 495               	.LCFI24:
+ 496               		.cfi_def_cfa_offset 13
+ 497               		.cfi_offset 15, -12
+ 498 01c8 0F93      		push r16
+ 499               	.LCFI25:
+ 500               		.cfi_def_cfa_offset 14
+ 501               		.cfi_offset 16, -13
+ 502 01ca 1F93      		push r17
+ 503               	.LCFI26:
+ 504               		.cfi_def_cfa_offset 15
+ 505               		.cfi_offset 17, -14
+ 506 01cc CF93      		push r28
+ 507               	.LCFI27:
+ 508               		.cfi_def_cfa_offset 16
+ 509               		.cfi_offset 28, -15
+ 510 01ce DF93      		push r29
+ 511               	.LCFI28:
+ 512               		.cfi_def_cfa_offset 17
+ 513               		.cfi_offset 29, -16
+ 514               	/* prologue: function */
+ 515               	/* frame size = 0 */
+ 516               	/* stack size = 15 */
+ 517               	.L__stack_usage = 15
+ 518 01d0 182F      		mov r17,r24
+ 519 01d2 562E      		mov r5,r22
+ 520 01d4 C42F      		mov r28,r20
+ 521 01d6 D22F      		mov r29,r18
+ 130:glcd/graphics.c **** 	int16_t i;
+ 131:glcd/graphics.c **** 	for (i=x; i<x+w; i++) {
+ 522               		.loc 1 131 0
+ 523 01d8 E82E      		mov r14,r24
+ 524 01da F12C      		mov r15,__zero_reg__
+ 525               	.LVL48:
+ 526 01dc 5701      		movw r10,r14
+ 527 01de A40E      		add r10,r20
+ 528 01e0 B11C      		adc r11,__zero_reg__
+ 529               	.LBB13:
+ 132:glcd/graphics.c **** 		int16_t j;
+ 133:glcd/graphics.c **** 		for (j=y; j<y+h; j++) {
+ 530               		.loc 1 133 0
+ 531 01e2 662E      		mov r6,r22
+ 532 01e4 712C      		mov r7,__zero_reg__
+ 533 01e6 4301      		movw r8,r6
+ 534 01e8 820E      		add r8,r18
+ 535 01ea 911C      		adc r9,__zero_reg__
+ 536               	.LVL49:
+ 537               	.L26:
+ 538               	.LBE13:
+ 131:glcd/graphics.c **** 		int16_t j;
+ 539               		.loc 1 131 0 discriminator 1
+ 540 01ec EA14      		cp r14,r10
+ 541 01ee FB04      		cpc r15,r11
+ 542 01f0 04F0      		brlt .L29
+ 134:glcd/graphics.c **** 			glcd_set_pixel(i, j, color);
+ 135:glcd/graphics.c **** 		}
+ 136:glcd/graphics.c **** 	}
+ 137:glcd/graphics.c **** 	glcd_update_bbox(x, y, x+w-1, y+h-1);
+ 543               		.loc 1 137 0
+ 544 01f2 2FEF      		ldi r18,lo8(-1)
+ 545 01f4 2D0F      		add r18,r29
+ 546 01f6 250D      		add r18,r5
+ 547 01f8 4FEF      		ldi r20,lo8(-1)
+ 548 01fa 4C0F      		add r20,r28
+ 549 01fc 410F      		add r20,r17
+ 550 01fe 652D      		mov r22,r5
+ 551 0200 812F      		mov r24,r17
+ 552               	/* epilogue start */
+ 138:glcd/graphics.c **** }
+ 553               		.loc 1 138 0
+ 554 0202 DF91      		pop r29
+ 555               	.LVL50:
+ 556 0204 CF91      		pop r28
+ 557               	.LVL51:
+ 558 0206 1F91      		pop r17
+ 559               	.LVL52:
+ 560 0208 0F91      		pop r16
+ 561               	.LVL53:
+ 562 020a FF90      		pop r15
+ 563 020c EF90      		pop r14
+ 564               	.LVL54:
+ 565 020e DF90      		pop r13
+ 566 0210 CF90      		pop r12
+ 567 0212 BF90      		pop r11
+ 568 0214 AF90      		pop r10
+ 569 0216 9F90      		pop r9
+ 570 0218 8F90      		pop r8
+ 571 021a 7F90      		pop r7
+ 572 021c 6F90      		pop r6
+ 573 021e 5F90      		pop r5
+ 574               	.LVL55:
+ 137:glcd/graphics.c **** }
+ 575               		.loc 1 137 0
+ 576 0220 0C94 0000 		jmp glcd_update_bbox
+ 577               	.LVL56:
+ 578               	.L29:
+ 579               	.LBB14:
+ 133:glcd/graphics.c **** 			glcd_set_pixel(i, j, color);
+ 580               		.loc 1 133 0
+ 581 0224 6301      		movw r12,r6
+ 582               	.LVL57:
+ 583               	.L27:
+ 133:glcd/graphics.c **** 			glcd_set_pixel(i, j, color);
+ 584               		.loc 1 133 0 is_stmt 0 discriminator 1
+ 585 0226 C814      		cp r12,r8
+ 586 0228 D904      		cpc r13,r9
+ 587 022a 04F0      		brlt .L28
+ 588               	.LBE14:
+ 131:glcd/graphics.c **** 		int16_t j;
+ 589               		.loc 1 131 0 is_stmt 1 discriminator 2
+ 590 022c 8FEF      		ldi r24,-1
+ 591 022e E81A      		sub r14,r24
+ 592 0230 F80A      		sbc r15,r24
+ 593               	.LVL58:
+ 594 0232 00C0      		rjmp .L26
+ 595               	.L28:
+ 596               	.LBB15:
+ 134:glcd/graphics.c **** 		}
+ 597               		.loc 1 134 0 discriminator 3
+ 598 0234 402F      		mov r20,r16
+ 599 0236 6C2D      		mov r22,r12
+ 600 0238 8E2D      		mov r24,r14
+ 601 023a 0E94 0000 		call glcd_set_pixel
+ 602               	.LVL59:
+ 133:glcd/graphics.c **** 			glcd_set_pixel(i, j, color);
+ 603               		.loc 1 133 0 discriminator 3
+ 604 023e 8FEF      		ldi r24,-1
+ 605 0240 C81A      		sub r12,r24
+ 606 0242 D80A      		sbc r13,r24
+ 607               	.LVL60:
+ 608 0244 00C0      		rjmp .L27
+ 609               	.LBE15:
+ 610               		.cfi_endproc
+ 611               	.LFE16:
+ 613               	.global	glcd_draw_rect
+ 615               	glcd_draw_rect:
+ 616               	.LFB17:
+ 139:glcd/graphics.c **** 
+ 140:glcd/graphics.c **** void glcd_draw_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t color)
+ 141:glcd/graphics.c **** {
+ 617               		.loc 1 141 0
+ 618               		.cfi_startproc
+ 619               	.LVL61:
+ 620 0246 AF92      		push r10
+ 621               	.LCFI29:
+ 622               		.cfi_def_cfa_offset 3
+ 623               		.cfi_offset 10, -2
+ 624 0248 BF92      		push r11
+ 625               	.LCFI30:
+ 626               		.cfi_def_cfa_offset 4
+ 627               		.cfi_offset 11, -3
+ 628 024a CF92      		push r12
+ 629               	.LCFI31:
+ 630               		.cfi_def_cfa_offset 5
+ 631               		.cfi_offset 12, -4
+ 632 024c DF92      		push r13
+ 633               	.LCFI32:
+ 634               		.cfi_def_cfa_offset 6
+ 635               		.cfi_offset 13, -5
+ 636 024e EF92      		push r14
+ 637               	.LCFI33:
+ 638               		.cfi_def_cfa_offset 7
+ 639               		.cfi_offset 14, -6
+ 640 0250 FF92      		push r15
+ 641               	.LCFI34:
+ 642               		.cfi_def_cfa_offset 8
+ 643               		.cfi_offset 15, -7
+ 644 0252 0F93      		push r16
+ 645               	.LCFI35:
+ 646               		.cfi_def_cfa_offset 9
+ 647               		.cfi_offset 16, -8
+ 648 0254 1F93      		push r17
+ 649               	.LCFI36:
+ 650               		.cfi_def_cfa_offset 10
+ 651               		.cfi_offset 17, -9
+ 652 0256 CF93      		push r28
+ 653               	.LCFI37:
+ 654               		.cfi_def_cfa_offset 11
+ 655               		.cfi_offset 28, -10
+ 656 0258 DF93      		push r29
+ 657               	.LCFI38:
+ 658               		.cfi_def_cfa_offset 12
+ 659               		.cfi_offset 29, -11
+ 660               	/* prologue: function */
+ 661               	/* frame size = 0 */
+ 662               	/* stack size = 10 */
+ 663               	.L__stack_usage = 10
+ 664 025a 182F      		mov r17,r24
+ 665 025c D62E      		mov r13,r22
+ 666 025e C42F      		mov r28,r20
+ 667 0260 D22F      		mov r29,r18
+ 142:glcd/graphics.c **** 	int16_t i;
+ 143:glcd/graphics.c **** 	for (i=x; i<x+w; i++) {
+ 668               		.loc 1 143 0
+ 669 0262 E82E      		mov r14,r24
+ 670 0264 F12C      		mov r15,__zero_reg__
+ 671               	.LVL62:
+ 672 0266 5701      		movw r10,r14
+ 673 0268 A40E      		add r10,r20
+ 674 026a B11C      		adc r11,__zero_reg__
+ 144:glcd/graphics.c **** 		glcd_set_pixel(i, y, color);
+ 145:glcd/graphics.c **** 		glcd_set_pixel(i, y+h-1, color);
+ 675               		.loc 1 145 0
+ 676 026c CC24      		clr r12
+ 677 026e CA94      		dec r12
+ 678 0270 C20E      		add r12,r18
+ 679 0272 C60E      		add r12,r22
+ 680               	.LVL63:
+ 681               	.L31:
+ 143:glcd/graphics.c **** 		glcd_set_pixel(i, y, color);
+ 682               		.loc 1 143 0 discriminator 1
+ 683 0274 EA14      		cp r14,r10
+ 684 0276 FB04      		cpc r15,r11
+ 685 0278 04F0      		brlt .L32
+ 146:glcd/graphics.c **** 	}
+ 147:glcd/graphics.c **** 	for (i=y; i<y+h; i++) {
+ 686               		.loc 1 147 0
+ 687 027a ED2C      		mov r14,r13
+ 688               	.LVL64:
+ 689 027c F12C      		mov r15,__zero_reg__
+ 690               	.LVL65:
+ 691 027e 5701      		movw r10,r14
+ 692 0280 AD0E      		add r10,r29
+ 693 0282 B11C      		adc r11,__zero_reg__
+ 694 0284 C150      		subi r28,lo8(-(-1))
+ 695               	.LVL66:
+ 148:glcd/graphics.c **** 		glcd_set_pixel(x, i, color);
+ 149:glcd/graphics.c **** 		glcd_set_pixel(x+w-1, i, color);
+ 696               		.loc 1 149 0
+ 697 0286 CC2E      		mov r12,r28
+ 698 0288 C10E      		add r12,r17
+ 699               	.LVL67:
+ 700               	.L33:
+ 147:glcd/graphics.c **** 		glcd_set_pixel(x, i, color);
+ 701               		.loc 1 147 0 discriminator 1
+ 702 028a EA14      		cp r14,r10
+ 703 028c FB04      		cpc r15,r11
+ 704 028e 04F0      		brlt .L34
+ 150:glcd/graphics.c **** 	} 
+ 151:glcd/graphics.c **** 	glcd_update_bbox(x, y, x+w-1, y+h-1);
+ 705               		.loc 1 151 0
+ 706 0290 2FEF      		ldi r18,lo8(-1)
+ 707 0292 2D0F      		add r18,r29
+ 708 0294 2D0D      		add r18,r13
+ 709 0296 4C2F      		mov r20,r28
+ 710 0298 410F      		add r20,r17
+ 711 029a 6D2D      		mov r22,r13
+ 712 029c 812F      		mov r24,r17
+ 713               	/* epilogue start */
+ 152:glcd/graphics.c **** }
+ 714               		.loc 1 152 0
+ 715 029e DF91      		pop r29
+ 716               	.LVL68:
+ 717 02a0 CF91      		pop r28
+ 718               	.LVL69:
+ 719 02a2 1F91      		pop r17
+ 720               	.LVL70:
+ 721 02a4 0F91      		pop r16
+ 722               	.LVL71:
+ 723 02a6 FF90      		pop r15
+ 724 02a8 EF90      		pop r14
+ 725               	.LVL72:
+ 726 02aa DF90      		pop r13
+ 727               	.LVL73:
+ 728 02ac CF90      		pop r12
+ 729 02ae BF90      		pop r11
+ 730 02b0 AF90      		pop r10
+ 151:glcd/graphics.c **** }
+ 731               		.loc 1 151 0
+ 732 02b2 0C94 0000 		jmp glcd_update_bbox
+ 733               	.LVL74:
+ 734               	.L32:
+ 144:glcd/graphics.c **** 		glcd_set_pixel(i, y+h-1, color);
+ 735               		.loc 1 144 0 discriminator 3
+ 736 02b6 402F      		mov r20,r16
+ 737 02b8 6D2D      		mov r22,r13
+ 738 02ba 8E2D      		mov r24,r14
+ 739 02bc 0E94 0000 		call glcd_set_pixel
+ 740               	.LVL75:
+ 145:glcd/graphics.c **** 	}
+ 741               		.loc 1 145 0 discriminator 3
+ 742 02c0 402F      		mov r20,r16
+ 743 02c2 6C2D      		mov r22,r12
+ 744 02c4 8E2D      		mov r24,r14
+ 745 02c6 0E94 0000 		call glcd_set_pixel
+ 746               	.LVL76:
+ 143:glcd/graphics.c **** 		glcd_set_pixel(i, y, color);
+ 747               		.loc 1 143 0 discriminator 3
+ 748 02ca 8FEF      		ldi r24,-1
+ 749 02cc E81A      		sub r14,r24
+ 750 02ce F80A      		sbc r15,r24
+ 751               	.LVL77:
+ 752 02d0 00C0      		rjmp .L31
+ 753               	.LVL78:
+ 754               	.L34:
+ 148:glcd/graphics.c **** 		glcd_set_pixel(x+w-1, i, color);
+ 755               		.loc 1 148 0 discriminator 3
+ 756 02d2 402F      		mov r20,r16
+ 757 02d4 6E2D      		mov r22,r14
+ 758 02d6 812F      		mov r24,r17
+ 759 02d8 0E94 0000 		call glcd_set_pixel
+ 760               	.LVL79:
+ 149:glcd/graphics.c **** 	} 
+ 761               		.loc 1 149 0 discriminator 3
+ 762 02dc 402F      		mov r20,r16
+ 763 02de 6E2D      		mov r22,r14
+ 764 02e0 8C2D      		mov r24,r12
+ 765 02e2 0E94 0000 		call glcd_set_pixel
+ 766               	.LVL80:
+ 147:glcd/graphics.c **** 		glcd_set_pixel(x, i, color);
+ 767               		.loc 1 147 0 discriminator 3
+ 768 02e6 8FEF      		ldi r24,-1
+ 769 02e8 E81A      		sub r14,r24
+ 770 02ea F80A      		sbc r15,r24
+ 771               	.LVL81:
+ 772 02ec 00C0      		rjmp .L33
+ 773               		.cfi_endproc
+ 774               	.LFE17:
+ 776               	.global	glcd_draw_rect_thick
+ 778               	glcd_draw_rect_thick:
+ 779               	.LFB18:
+ 153:glcd/graphics.c **** 
+ 154:glcd/graphics.c **** void glcd_draw_rect_thick(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t tx, uint8_t ty, uint8
+ 155:glcd/graphics.c **** {
+ 780               		.loc 1 155 0
+ 781               		.cfi_startproc
+ 782               	.LVL82:
+ 783 02ee 5F92      		push r5
+ 784               	.LCFI39:
+ 785               		.cfi_def_cfa_offset 3
+ 786               		.cfi_offset 5, -2
+ 787 02f0 6F92      		push r6
+ 788               	.LCFI40:
+ 789               		.cfi_def_cfa_offset 4
+ 790               		.cfi_offset 6, -3
+ 791 02f2 7F92      		push r7
+ 792               	.LCFI41:
+ 793               		.cfi_def_cfa_offset 5
+ 794               		.cfi_offset 7, -4
+ 795 02f4 8F92      		push r8
+ 796               	.LCFI42:
+ 797               		.cfi_def_cfa_offset 6
+ 798               		.cfi_offset 8, -5
+ 799 02f6 9F92      		push r9
+ 800               	.LCFI43:
+ 801               		.cfi_def_cfa_offset 7
+ 802               		.cfi_offset 9, -6
+ 803 02f8 AF92      		push r10
+ 804               	.LCFI44:
+ 805               		.cfi_def_cfa_offset 8
+ 806               		.cfi_offset 10, -7
+ 807 02fa BF92      		push r11
+ 808               	.LCFI45:
+ 809               		.cfi_def_cfa_offset 9
+ 810               		.cfi_offset 11, -8
+ 811 02fc CF92      		push r12
+ 812               	.LCFI46:
+ 813               		.cfi_def_cfa_offset 10
+ 814               		.cfi_offset 12, -9
+ 815 02fe DF92      		push r13
+ 816               	.LCFI47:
+ 817               		.cfi_def_cfa_offset 11
+ 818               		.cfi_offset 13, -10
+ 819 0300 EF92      		push r14
+ 820               	.LCFI48:
+ 821               		.cfi_def_cfa_offset 12
+ 822               		.cfi_offset 14, -11
+ 823 0302 FF92      		push r15
+ 824               	.LCFI49:
+ 825               		.cfi_def_cfa_offset 13
+ 826               		.cfi_offset 15, -12
+ 827 0304 0F93      		push r16
+ 828               	.LCFI50:
+ 829               		.cfi_def_cfa_offset 14
+ 830               		.cfi_offset 16, -13
+ 831 0306 1F93      		push r17
+ 832               	.LCFI51:
+ 833               		.cfi_def_cfa_offset 15
+ 834               		.cfi_offset 17, -14
+ 835 0308 CF93      		push r28
+ 836               	.LCFI52:
+ 837               		.cfi_def_cfa_offset 16
+ 838               		.cfi_offset 28, -15
+ 839 030a DF93      		push r29
+ 840               	.LCFI53:
+ 841               		.cfi_def_cfa_offset 17
+ 842               		.cfi_offset 29, -16
+ 843               	/* prologue: function */
+ 844               	/* frame size = 0 */
+ 845               	/* stack size = 15 */
+ 846               	.L__stack_usage = 15
+ 847 030c D82F      		mov r29,r24
+ 848 030e 162F      		mov r17,r22
+ 849 0310 C42F      		mov r28,r20
+ 850 0312 D22E      		mov r13,r18
+ 156:glcd/graphics.c **** 	int16_t i, t;
+ 157:glcd/graphics.c **** 	
+ 158:glcd/graphics.c **** 	if (tx == 0) {
+ 851               		.loc 1 158 0
+ 852 0314 0111      		cpse r16,__zero_reg__
+ 853 0316 00C0      		rjmp .L36
+ 159:glcd/graphics.c **** 		tx = 1;
+ 854               		.loc 1 159 0
+ 855 0318 01E0      		ldi r16,lo8(1)
+ 856               	.LVL83:
+ 857               	.L36:
+ 160:glcd/graphics.c **** 	}
+ 161:glcd/graphics.c **** 
+ 162:glcd/graphics.c **** 	if (ty == 0) {
+ 858               		.loc 1 162 0
+ 859 031a E110      		cpse r14,__zero_reg__
+ 860 031c 00C0      		rjmp .L37
+ 163:glcd/graphics.c **** 		ty = 1;
+ 861               		.loc 1 163 0
+ 862 031e EE24      		clr r14
+ 863 0320 E394      		inc r14
+ 864               	.LVL84:
+ 865               	.L37:
+ 164:glcd/graphics.c **** 	}
+ 165:glcd/graphics.c **** 	
+ 166:glcd/graphics.c **** 	for (i=x; i<x+w; i++) {
+ 866               		.loc 1 166 0
+ 867 0322 AD2E      		mov r10,r29
+ 868 0324 B12C      		mov r11,__zero_reg__
+ 869               	.LVL85:
+ 870 0326 4501      		movw r8,r10
+ 871 0328 8C0E      		add r8,r28
+ 872 032a 911C      		adc r9,__zero_reg__
+ 167:glcd/graphics.c **** 		/* Top and bottom sides */
+ 168:glcd/graphics.c **** 		for (t=0; t<(ty); t++) {
+ 873               		.loc 1 168 0
+ 874 032c F12C      		mov r15,__zero_reg__
+ 875               	.LVL86:
+ 876               	.L38:
+ 166:glcd/graphics.c **** 		/* Top and bottom sides */
+ 877               		.loc 1 166 0 discriminator 1
+ 878 032e A814      		cp r10,r8
+ 879 0330 B904      		cpc r11,r9
+ 880 0332 04F4      		brge .L40
+ 881 0334 512E      		mov r5,r17
+ 882 0336 5D0C      		add r5,r13
+ 166:glcd/graphics.c **** 		/* Top and bottom sides */
+ 883               		.loc 1 166 0 is_stmt 0
+ 884 0338 612C      		mov r6,__zero_reg__
+ 885 033a 712C      		mov r7,__zero_reg__
+ 886 033c 00C0      		rjmp .L41
+ 887               	.LVL87:
+ 888               	.L39:
+ 169:glcd/graphics.c **** 			glcd_set_pixel(i, y+t, color);
+ 889               		.loc 1 169 0 is_stmt 1 discriminator 3
+ 890 033e 612F      		mov r22,r17
+ 891 0340 660D      		add r22,r6
+ 892 0342 4C2D      		mov r20,r12
+ 893 0344 8A2D      		mov r24,r10
+ 894 0346 0E94 0000 		call glcd_set_pixel
+ 895               	.LVL88:
+ 170:glcd/graphics.c **** 			glcd_set_pixel(i, y+h-1-t, color);
+ 896               		.loc 1 170 0 discriminator 3
+ 897 034a 4C2D      		mov r20,r12
+ 898 034c 652D      		mov r22,r5
+ 899 034e 8A2D      		mov r24,r10
+ 900 0350 0E94 0000 		call glcd_set_pixel
+ 901               	.LVL89:
+ 168:glcd/graphics.c **** 			glcd_set_pixel(i, y+t, color);
+ 902               		.loc 1 168 0 discriminator 3
+ 903 0354 8FEF      		ldi r24,-1
+ 904 0356 681A      		sub r6,r24
+ 905 0358 780A      		sbc r7,r24
+ 906               	.LVL90:
+ 907               	.L41:
+ 908 035a 5A94      		dec r5
+ 168:glcd/graphics.c **** 			glcd_set_pixel(i, y+t, color);
+ 909               		.loc 1 168 0 is_stmt 0 discriminator 1
+ 910 035c 6E14      		cp r6,r14
+ 911 035e 7F04      		cpc r7,r15
+ 912 0360 04F0      		brlt .L39
+ 166:glcd/graphics.c **** 		/* Top and bottom sides */
+ 913               		.loc 1 166 0 is_stmt 1 discriminator 2
+ 914 0362 8FEF      		ldi r24,-1
+ 915 0364 A81A      		sub r10,r24
+ 916 0366 B80A      		sbc r11,r24
+ 917               	.LVL91:
+ 918 0368 00C0      		rjmp .L38
+ 919               	.LVL92:
+ 920               	.L40:
+ 171:glcd/graphics.c **** 		}
+ 172:glcd/graphics.c **** 	}
+ 173:glcd/graphics.c **** 	for (i=y; i<y+h; i++) {
+ 921               		.loc 1 173 0
+ 922 036a E12E      		mov r14,r17
+ 923               	.LVL93:
+ 924 036c F12C      		mov r15,__zero_reg__
+ 925               	.LVL94:
+ 926 036e 3701      		movw r6,r14
+ 927 0370 6D0C      		add r6,r13
+ 928 0372 711C      		adc r7,__zero_reg__
+ 174:glcd/graphics.c **** 		/* Left and right sides */
+ 175:glcd/graphics.c **** 		for (t=0; t<(tx); t++) {
+ 929               		.loc 1 175 0
+ 930 0374 A02E      		mov r10,r16
+ 931 0376 B12C      		mov r11,__zero_reg__
+ 932               	.LVL95:
+ 933               	.L42:
+ 173:glcd/graphics.c **** 		/* Left and right sides */
+ 934               		.loc 1 173 0 discriminator 1
+ 935 0378 E614      		cp r14,r6
+ 936 037a F704      		cpc r15,r7
+ 937 037c 04F4      		brge .L44
+ 938 037e 0D2F      		mov r16,r29
+ 939 0380 0C0F      		add r16,r28
+ 173:glcd/graphics.c **** 		/* Left and right sides */
+ 940               		.loc 1 173 0 is_stmt 0
+ 941 0382 812C      		mov r8,__zero_reg__
+ 942 0384 912C      		mov r9,__zero_reg__
+ 943 0386 00C0      		rjmp .L45
+ 944               	.LVL96:
+ 945               	.L43:
+ 176:glcd/graphics.c **** 			glcd_set_pixel(x+t, i, color);
+ 946               		.loc 1 176 0 is_stmt 1 discriminator 3
+ 947 0388 4C2D      		mov r20,r12
+ 948 038a 6E2D      		mov r22,r14
+ 949 038c 8D2F      		mov r24,r29
+ 950 038e 880D      		add r24,r8
+ 951 0390 0E94 0000 		call glcd_set_pixel
+ 952               	.LVL97:
+ 177:glcd/graphics.c **** 			glcd_set_pixel(x+w-1-t, i, color);
+ 953               		.loc 1 177 0 discriminator 3
+ 954 0394 4C2D      		mov r20,r12
+ 955 0396 6E2D      		mov r22,r14
+ 956 0398 802F      		mov r24,r16
+ 957 039a 0E94 0000 		call glcd_set_pixel
+ 958               	.LVL98:
+ 175:glcd/graphics.c **** 			glcd_set_pixel(x+t, i, color);
+ 959               		.loc 1 175 0 discriminator 3
+ 960 039e 8FEF      		ldi r24,-1
+ 961 03a0 881A      		sub r8,r24
+ 962 03a2 980A      		sbc r9,r24
+ 963               	.LVL99:
+ 964               	.L45:
+ 965 03a4 0150      		subi r16,lo8(-(-1))
+ 175:glcd/graphics.c **** 			glcd_set_pixel(x+t, i, color);
+ 966               		.loc 1 175 0 is_stmt 0 discriminator 1
+ 967 03a6 8A14      		cp r8,r10
+ 968 03a8 9B04      		cpc r9,r11
+ 969 03aa 04F0      		brlt .L43
+ 173:glcd/graphics.c **** 		/* Left and right sides */
+ 970               		.loc 1 173 0 is_stmt 1 discriminator 2
+ 971 03ac 8FEF      		ldi r24,-1
+ 972 03ae E81A      		sub r14,r24
+ 973 03b0 F80A      		sbc r15,r24
+ 974               	.LVL100:
+ 975 03b2 00C0      		rjmp .L42
+ 976               	.LVL101:
+ 977               	.L44:
+ 178:glcd/graphics.c **** 		}
+ 179:glcd/graphics.c **** 	} 
+ 180:glcd/graphics.c **** 	glcd_update_bbox(x, y, x+w-1, y+h-1);
+ 978               		.loc 1 180 0
+ 979 03b4 2FEF      		ldi r18,lo8(-1)
+ 980 03b6 2D0D      		add r18,r13
+ 981 03b8 210F      		add r18,r17
+ 982 03ba 4FEF      		ldi r20,lo8(-1)
+ 983 03bc 4C0F      		add r20,r28
+ 984 03be 4D0F      		add r20,r29
+ 985 03c0 612F      		mov r22,r17
+ 986 03c2 8D2F      		mov r24,r29
+ 987               	/* epilogue start */
+ 181:glcd/graphics.c **** }
+ 988               		.loc 1 181 0
+ 989 03c4 DF91      		pop r29
+ 990               	.LVL102:
+ 991 03c6 CF91      		pop r28
+ 992               	.LVL103:
+ 993 03c8 1F91      		pop r17
+ 994               	.LVL104:
+ 995 03ca 0F91      		pop r16
+ 996 03cc FF90      		pop r15
+ 997 03ce EF90      		pop r14
+ 998               	.LVL105:
+ 999 03d0 DF90      		pop r13
+ 1000               	.LVL106:
+ 1001 03d2 CF90      		pop r12
+ 1002               	.LVL107:
+ 1003 03d4 BF90      		pop r11
+ 1004 03d6 AF90      		pop r10
+ 1005               	.LVL108:
+ 1006 03d8 9F90      		pop r9
+ 1007 03da 8F90      		pop r8
+ 1008 03dc 7F90      		pop r7
+ 1009 03de 6F90      		pop r6
+ 1010 03e0 5F90      		pop r5
+ 180:glcd/graphics.c **** }
+ 1011               		.loc 1 180 0
+ 1012 03e2 0C94 0000 		jmp glcd_update_bbox
+ 1013               	.LVL109:
+ 1014               		.cfi_endproc
+ 1015               	.LFE18:
+ 1017               	.global	glcd_draw_rect_shadow
+ 1019               	glcd_draw_rect_shadow:
+ 1020               	.LFB19:
+ 182:glcd/graphics.c **** 
+ 183:glcd/graphics.c **** void glcd_draw_rect_shadow(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t color)
+ 184:glcd/graphics.c **** {
+ 1021               		.loc 1 184 0
+ 1022               		.cfi_startproc
+ 1023               	.LVL110:
+ 1024 03e6 EF92      		push r14
+ 1025               	.LCFI54:
+ 1026               		.cfi_def_cfa_offset 3
+ 1027               		.cfi_offset 14, -2
+ 1028 03e8 FF92      		push r15
+ 1029               	.LCFI55:
+ 1030               		.cfi_def_cfa_offset 4
+ 1031               		.cfi_offset 15, -3
+ 1032 03ea 0F93      		push r16
+ 1033               	.LCFI56:
+ 1034               		.cfi_def_cfa_offset 5
+ 1035               		.cfi_offset 16, -4
+ 1036 03ec 1F93      		push r17
+ 1037               	.LCFI57:
+ 1038               		.cfi_def_cfa_offset 6
+ 1039               		.cfi_offset 17, -5
+ 1040 03ee CF93      		push r28
+ 1041               	.LCFI58:
+ 1042               		.cfi_def_cfa_offset 7
+ 1043               		.cfi_offset 28, -6
+ 1044 03f0 DF93      		push r29
+ 1045               	.LCFI59:
+ 1046               		.cfi_def_cfa_offset 8
+ 1047               		.cfi_offset 29, -7
+ 1048               	/* prologue: function */
+ 1049               	/* frame size = 0 */
+ 1050               	/* stack size = 6 */
+ 1051               	.L__stack_usage = 6
+ 1052 03f2 E82E      		mov r14,r24
+ 1053 03f4 162F      		mov r17,r22
+ 1054 03f6 C42F      		mov r28,r20
+ 1055 03f8 D22F      		mov r29,r18
+ 185:glcd/graphics.c **** 	glcd_draw_rect(x, y, w, h, color);
+ 1056               		.loc 1 185 0
+ 1057 03fa 0E94 0000 		call glcd_draw_rect
+ 1058               	.LVL111:
+ 186:glcd/graphics.c **** 	glcd_draw_line(x+1, y+h, x+w, y+h, color);
+ 1059               		.loc 1 186 0
+ 1060 03fe D10F      		add r29,r17
+ 1061               	.LVL112:
+ 1062 0400 CE0D      		add r28,r14
+ 1063               	.LVL113:
+ 1064 0402 2D2F      		mov r18,r29
+ 1065 0404 4C2F      		mov r20,r28
+ 1066 0406 6D2F      		mov r22,r29
+ 1067 0408 81E0      		ldi r24,lo8(1)
+ 1068 040a 8E0D      		add r24,r14
+ 1069 040c 0E94 0000 		call glcd_draw_line
+ 1070               	.LVL114:
+ 187:glcd/graphics.c **** 	glcd_draw_line(x+w, y+1, x+w, y+h, color);
+ 1071               		.loc 1 187 0
+ 1072 0410 61E0      		ldi r22,lo8(1)
+ 1073 0412 610F      		add r22,r17
+ 1074 0414 2D2F      		mov r18,r29
+ 1075 0416 4C2F      		mov r20,r28
+ 1076 0418 8C2F      		mov r24,r28
+ 1077 041a 0E94 0000 		call glcd_draw_line
+ 1078               	.LVL115:
+ 1079               	/* epilogue start */
+ 188:glcd/graphics.c **** }
+ 1080               		.loc 1 188 0
+ 1081 041e DF91      		pop r29
+ 1082 0420 CF91      		pop r28
+ 1083 0422 1F91      		pop r17
+ 1084               	.LVL116:
+ 1085 0424 0F91      		pop r16
+ 1086               	.LVL117:
+ 1087 0426 FF90      		pop r15
+ 1088 0428 EF90      		pop r14
+ 1089               	.LVL118:
+ 1090 042a 0895      		ret
+ 1091               		.cfi_endproc
+ 1092               	.LFE19:
+ 1094               	.global	glcd_draw_circle
+ 1096               	glcd_draw_circle:
+ 1097               	.LFB20:
+ 189:glcd/graphics.c **** 
+ 190:glcd/graphics.c **** void glcd_draw_circle(uint8_t x0, uint8_t y0, uint8_t r, uint8_t color)
+ 191:glcd/graphics.c **** {
+ 1098               		.loc 1 191 0
+ 1099               		.cfi_startproc
+ 1100               	.LVL119:
+ 1101 042c AF92      		push r10
+ 1102               	.LCFI60:
+ 1103               		.cfi_def_cfa_offset 3
+ 1104               		.cfi_offset 10, -2
+ 1105 042e BF92      		push r11
+ 1106               	.LCFI61:
+ 1107               		.cfi_def_cfa_offset 4
+ 1108               		.cfi_offset 11, -3
+ 1109 0430 CF92      		push r12
+ 1110               	.LCFI62:
+ 1111               		.cfi_def_cfa_offset 5
+ 1112               		.cfi_offset 12, -4
+ 1113 0432 DF92      		push r13
+ 1114               	.LCFI63:
+ 1115               		.cfi_def_cfa_offset 6
+ 1116               		.cfi_offset 13, -5
+ 1117 0434 EF92      		push r14
+ 1118               	.LCFI64:
+ 1119               		.cfi_def_cfa_offset 7
+ 1120               		.cfi_offset 14, -6
+ 1121 0436 FF92      		push r15
+ 1122               	.LCFI65:
+ 1123               		.cfi_def_cfa_offset 8
+ 1124               		.cfi_offset 15, -7
+ 1125 0438 0F93      		push r16
+ 1126               	.LCFI66:
+ 1127               		.cfi_def_cfa_offset 9
+ 1128               		.cfi_offset 16, -8
+ 1129 043a 1F93      		push r17
+ 1130               	.LCFI67:
+ 1131               		.cfi_def_cfa_offset 10
+ 1132               		.cfi_offset 17, -9
+ 1133 043c CF93      		push r28
+ 1134               	.LCFI68:
+ 1135               		.cfi_def_cfa_offset 11
+ 1136               		.cfi_offset 28, -10
+ 1137 043e DF93      		push r29
+ 1138               	.LCFI69:
+ 1139               		.cfi_def_cfa_offset 12
+ 1140               		.cfi_offset 29, -11
+ 1141               	/* prologue: function */
+ 1142               	/* frame size = 0 */
+ 1143               	/* stack size = 10 */
+ 1144               	.L__stack_usage = 10
+ 1145 0440 E82E      		mov r14,r24
+ 1146 0442 D62E      		mov r13,r22
+ 1147 0444 F22E      		mov r15,r18
+ 192:glcd/graphics.c **** 		
+ 193:glcd/graphics.c **** 	int8_t f = 1 - r;
+ 1148               		.loc 1 193 0
+ 1149 0446 81E0      		ldi r24,lo8(1)
+ 1150               	.LVL120:
+ 1151 0448 C82E      		mov r12,r24
+ 1152 044a C41A      		sub r12,r20
+ 1153               	.LVL121:
+ 194:glcd/graphics.c **** 	int8_t ddF_x = 1;
+ 195:glcd/graphics.c **** 	int8_t ddF_y = -2 * r;
+ 1154               		.loc 1 195 0
+ 1155 044c B42E      		mov r11,r20
+ 1156 044e B194      		neg r11
+ 1157 0450 BB0C      		lsl r11
+ 1158               	.LVL122:
+ 196:glcd/graphics.c **** 	int8_t x = 0;
+ 197:glcd/graphics.c **** 	int8_t y = r;
+ 1159               		.loc 1 197 0
+ 1160 0452 C42F      		mov r28,r20
+ 1161               	.LVL123:
+ 198:glcd/graphics.c **** 	
+ 199:glcd/graphics.c **** 	glcd_update_bbox(x0-r, y0-r, x0+r, y0+r);
+ 1162               		.loc 1 199 0
+ 1163 0454 A42E      		mov r10,r20
+ 1164 0456 A60E      		add r10,r22
+ 1165 0458 142F      		mov r17,r20
+ 1166 045a 1E0D      		add r17,r14
+ 1167 045c 062F      		mov r16,r22
+ 1168 045e 041B      		sub r16,r20
+ 1169 0460 DE2D      		mov r29,r14
+ 1170 0462 D41B      		sub r29,r20
+ 1171 0464 2A2D      		mov r18,r10
+ 1172               	.LVL124:
+ 1173 0466 412F      		mov r20,r17
+ 1174               	.LVL125:
+ 1175 0468 602F      		mov r22,r16
+ 1176               	.LVL126:
+ 1177 046a 8D2F      		mov r24,r29
+ 1178 046c 0E94 0000 		call glcd_update_bbox
+ 1179               	.LVL127:
+ 200:glcd/graphics.c **** 	
+ 201:glcd/graphics.c **** 	glcd_set_pixel(x0, y0+r, color);
+ 1180               		.loc 1 201 0
+ 1181 0470 4F2D      		mov r20,r15
+ 1182 0472 6A2D      		mov r22,r10
+ 1183 0474 8E2D      		mov r24,r14
+ 1184 0476 0E94 0000 		call glcd_set_pixel
+ 1185               	.LVL128:
+ 202:glcd/graphics.c **** 	glcd_set_pixel(x0, y0-r, color);
+ 1186               		.loc 1 202 0
+ 1187 047a 4F2D      		mov r20,r15
+ 1188 047c 602F      		mov r22,r16
+ 1189 047e 8E2D      		mov r24,r14
+ 1190 0480 0E94 0000 		call glcd_set_pixel
+ 1191               	.LVL129:
+ 203:glcd/graphics.c **** 	glcd_set_pixel(x0+r, y0, color);
+ 1192               		.loc 1 203 0
+ 1193 0484 4F2D      		mov r20,r15
+ 1194 0486 6D2D      		mov r22,r13
+ 1195 0488 812F      		mov r24,r17
+ 1196 048a 0E94 0000 		call glcd_set_pixel
+ 1197               	.LVL130:
+ 204:glcd/graphics.c **** 	glcd_set_pixel(x0-r, y0, color);
+ 1198               		.loc 1 204 0
+ 1199 048e 4F2D      		mov r20,r15
+ 1200 0490 6D2D      		mov r22,r13
+ 1201 0492 8D2F      		mov r24,r29
+ 1202 0494 0E94 0000 		call glcd_set_pixel
+ 1203               	.LVL131:
+ 196:glcd/graphics.c **** 	int8_t y = r;
+ 1204               		.loc 1 196 0
+ 1205 0498 D0E0      		ldi r29,0
+ 1206               	.LVL132:
+ 1207               	.L48:
+ 205:glcd/graphics.c **** 	
+ 206:glcd/graphics.c **** 	while (x<y) {
+ 1208               		.loc 1 206 0
+ 1209 049a DC17      		cp r29,r28
+ 1210 049c 04F0      		brlt .L50
+ 1211               	/* epilogue start */
+ 207:glcd/graphics.c **** 		if (f >= 0) {
+ 208:glcd/graphics.c **** 			y--;
+ 209:glcd/graphics.c **** 			ddF_y += 2;
+ 210:glcd/graphics.c **** 			f += ddF_y;
+ 211:glcd/graphics.c **** 		}
+ 212:glcd/graphics.c **** 		x++;
+ 213:glcd/graphics.c **** 		ddF_x += 2;
+ 214:glcd/graphics.c **** 		f += ddF_x;
+ 215:glcd/graphics.c **** 		
+ 216:glcd/graphics.c **** 		glcd_set_pixel(x0 + x, y0 + y, color);
+ 217:glcd/graphics.c **** 		glcd_set_pixel(x0 - x, y0 + y, color);
+ 218:glcd/graphics.c **** 		glcd_set_pixel(x0 + x, y0 - y, color);
+ 219:glcd/graphics.c **** 		glcd_set_pixel(x0 - x, y0 - y, color);
+ 220:glcd/graphics.c **** 		
+ 221:glcd/graphics.c **** 		glcd_set_pixel(x0 + y, y0 + x, color);
+ 222:glcd/graphics.c **** 		glcd_set_pixel(x0 - y, y0 + x, color);
+ 223:glcd/graphics.c **** 		glcd_set_pixel(x0 + y, y0 - x, color);
+ 224:glcd/graphics.c **** 		glcd_set_pixel(x0 - y, y0 - x, color);
+ 225:glcd/graphics.c **** 		
+ 226:glcd/graphics.c **** 	}
+ 227:glcd/graphics.c **** }
+ 1212               		.loc 1 227 0
+ 1213 049e DF91      		pop r29
+ 1214               	.LVL133:
+ 1215 04a0 CF91      		pop r28
+ 1216               	.LVL134:
+ 1217 04a2 1F91      		pop r17
+ 1218 04a4 0F91      		pop r16
+ 1219 04a6 FF90      		pop r15
+ 1220               	.LVL135:
+ 1221 04a8 EF90      		pop r14
+ 1222               	.LVL136:
+ 1223 04aa DF90      		pop r13
+ 1224               	.LVL137:
+ 1225 04ac CF90      		pop r12
+ 1226               	.LVL138:
+ 1227 04ae BF90      		pop r11
+ 1228               	.LVL139:
+ 1229 04b0 AF90      		pop r10
+ 1230 04b2 0895      		ret
+ 1231               	.LVL140:
+ 1232               	.L50:
+ 207:glcd/graphics.c **** 		if (f >= 0) {
+ 1233               		.loc 1 207 0
+ 1234 04b4 C7FC      		sbrc r12,7
+ 1235 04b6 00C0      		rjmp .L49
+ 208:glcd/graphics.c **** 			ddF_y += 2;
+ 1236               		.loc 1 208 0
+ 1237 04b8 C150      		subi r28,lo8(-(-1))
+ 1238               	.LVL141:
+ 209:glcd/graphics.c **** 			f += ddF_y;
+ 1239               		.loc 1 209 0
+ 1240 04ba B394      		inc r11
+ 1241 04bc B394      		inc r11
+ 1242               	.LVL142:
+ 210:glcd/graphics.c **** 		}
+ 1243               		.loc 1 210 0
+ 1244 04be CB0C      		add r12,r11
+ 1245               	.LVL143:
+ 1246               	.L49:
+ 1247 04c0 DF5F      		subi r29,lo8(-(1))
+ 1248               	.LVL144:
+ 214:glcd/graphics.c **** 		
+ 1249               		.loc 1 214 0
+ 1250 04c2 8D2F      		mov r24,r29
+ 1251 04c4 880F      		lsl r24
+ 1252 04c6 8F5F      		subi r24,lo8(-(1))
+ 1253               	.LVL145:
+ 1254 04c8 C80E      		add r12,r24
+ 1255               	.LVL146:
+ 1256 04ca AE2C      		mov r10,r14
+ 1257 04cc AD0E      		add r10,r29
+ 216:glcd/graphics.c **** 		glcd_set_pixel(x0 - x, y0 + y, color);
+ 1258               		.loc 1 216 0
+ 1259 04ce 4F2D      		mov r20,r15
+ 1260 04d0 1D2D      		mov r17,r13
+ 1261 04d2 1C0F      		add r17,r28
+ 1262 04d4 612F      		mov r22,r17
+ 1263 04d6 8A2D      		mov r24,r10
+ 1264               	.LVL147:
+ 1265 04d8 0E94 0000 		call glcd_set_pixel
+ 1266               	.LVL148:
+ 1267 04dc 0E2D      		mov r16,r14
+ 1268 04de 0D1B      		sub r16,r29
+ 217:glcd/graphics.c **** 		glcd_set_pixel(x0 + x, y0 - y, color);
+ 1269               		.loc 1 217 0
+ 1270 04e0 4F2D      		mov r20,r15
+ 1271 04e2 612F      		mov r22,r17
+ 1272 04e4 802F      		mov r24,r16
+ 1273 04e6 0E94 0000 		call glcd_set_pixel
+ 1274               	.LVL149:
+ 218:glcd/graphics.c **** 		glcd_set_pixel(x0 - x, y0 - y, color);
+ 1275               		.loc 1 218 0
+ 1276 04ea 4F2D      		mov r20,r15
+ 1277 04ec 1D2D      		mov r17,r13
+ 1278 04ee 1C1B      		sub r17,r28
+ 1279 04f0 612F      		mov r22,r17
+ 1280 04f2 8A2D      		mov r24,r10
+ 1281 04f4 0E94 0000 		call glcd_set_pixel
+ 1282               	.LVL150:
+ 219:glcd/graphics.c **** 		
+ 1283               		.loc 1 219 0
+ 1284 04f8 4F2D      		mov r20,r15
+ 1285 04fa 612F      		mov r22,r17
+ 1286 04fc 802F      		mov r24,r16
+ 1287 04fe 0E94 0000 		call glcd_set_pixel
+ 1288               	.LVL151:
+ 1289 0502 1D2D      		mov r17,r13
+ 1290 0504 1D0F      		add r17,r29
+ 221:glcd/graphics.c **** 		glcd_set_pixel(x0 - y, y0 + x, color);
+ 1291               		.loc 1 221 0
+ 1292 0506 4F2D      		mov r20,r15
+ 1293 0508 612F      		mov r22,r17
+ 1294 050a 0E2D      		mov r16,r14
+ 1295 050c 0C0F      		add r16,r28
+ 1296 050e 802F      		mov r24,r16
+ 1297 0510 0E94 0000 		call glcd_set_pixel
+ 1298               	.LVL152:
+ 222:glcd/graphics.c **** 		glcd_set_pixel(x0 + y, y0 - x, color);
+ 1299               		.loc 1 222 0
+ 1300 0514 4F2D      		mov r20,r15
+ 1301 0516 612F      		mov r22,r17
+ 1302 0518 1E2D      		mov r17,r14
+ 1303 051a 1C1B      		sub r17,r28
+ 1304 051c 812F      		mov r24,r17
+ 1305 051e 0E94 0000 		call glcd_set_pixel
+ 1306               	.LVL153:
+ 1307 0522 AD2C      		mov r10,r13
+ 1308 0524 AD1A      		sub r10,r29
+ 223:glcd/graphics.c **** 		glcd_set_pixel(x0 - y, y0 - x, color);
+ 1309               		.loc 1 223 0
+ 1310 0526 4F2D      		mov r20,r15
+ 1311 0528 6A2D      		mov r22,r10
+ 1312 052a 802F      		mov r24,r16
+ 1313 052c 0E94 0000 		call glcd_set_pixel
+ 1314               	.LVL154:
+ 224:glcd/graphics.c **** 		
+ 1315               		.loc 1 224 0
+ 1316 0530 4F2D      		mov r20,r15
+ 1317 0532 6A2D      		mov r22,r10
+ 1318 0534 812F      		mov r24,r17
+ 1319 0536 0E94 0000 		call glcd_set_pixel
+ 1320               	.LVL155:
+ 1321 053a 00C0      		rjmp .L48
+ 1322               		.cfi_endproc
+ 1323               	.LFE20:
+ 1325               	.global	glcd_fill_circle
+ 1327               	glcd_fill_circle:
+ 1328               	.LFB21:
+ 228:glcd/graphics.c **** 
+ 229:glcd/graphics.c **** void glcd_fill_circle(uint8_t x0, uint8_t y0, uint8_t r, uint8_t color)
+ 230:glcd/graphics.c **** {
+ 1329               		.loc 1 230 0
+ 1330               		.cfi_startproc
+ 1331               	.LVL156:
+ 1332 053c 6F92      		push r6
+ 1333               	.LCFI70:
+ 1334               		.cfi_def_cfa_offset 3
+ 1335               		.cfi_offset 6, -2
+ 1336 053e 7F92      		push r7
+ 1337               	.LCFI71:
+ 1338               		.cfi_def_cfa_offset 4
+ 1339               		.cfi_offset 7, -3
+ 1340 0540 8F92      		push r8
+ 1341               	.LCFI72:
+ 1342               		.cfi_def_cfa_offset 5
+ 1343               		.cfi_offset 8, -4
+ 1344 0542 9F92      		push r9
+ 1345               	.LCFI73:
+ 1346               		.cfi_def_cfa_offset 6
+ 1347               		.cfi_offset 9, -5
+ 1348 0544 AF92      		push r10
+ 1349               	.LCFI74:
+ 1350               		.cfi_def_cfa_offset 7
+ 1351               		.cfi_offset 10, -6
+ 1352 0546 BF92      		push r11
+ 1353               	.LCFI75:
+ 1354               		.cfi_def_cfa_offset 8
+ 1355               		.cfi_offset 11, -7
+ 1356 0548 CF92      		push r12
+ 1357               	.LCFI76:
+ 1358               		.cfi_def_cfa_offset 9
+ 1359               		.cfi_offset 12, -8
+ 1360 054a DF92      		push r13
+ 1361               	.LCFI77:
+ 1362               		.cfi_def_cfa_offset 10
+ 1363               		.cfi_offset 13, -9
+ 1364 054c EF92      		push r14
+ 1365               	.LCFI78:
+ 1366               		.cfi_def_cfa_offset 11
+ 1367               		.cfi_offset 14, -10
+ 1368 054e FF92      		push r15
+ 1369               	.LCFI79:
+ 1370               		.cfi_def_cfa_offset 12
+ 1371               		.cfi_offset 15, -11
+ 1372 0550 0F93      		push r16
+ 1373               	.LCFI80:
+ 1374               		.cfi_def_cfa_offset 13
+ 1375               		.cfi_offset 16, -12
+ 1376 0552 1F93      		push r17
+ 1377               	.LCFI81:
+ 1378               		.cfi_def_cfa_offset 14
+ 1379               		.cfi_offset 17, -13
+ 1380 0554 CF93      		push r28
+ 1381               	.LCFI82:
+ 1382               		.cfi_def_cfa_offset 15
+ 1383               		.cfi_offset 28, -14
+ 1384 0556 DF93      		push r29
+ 1385               	.LCFI83:
+ 1386               		.cfi_def_cfa_offset 16
+ 1387               		.cfi_offset 29, -15
+ 1388               	/* prologue: function */
+ 1389               	/* frame size = 0 */
+ 1390               	/* stack size = 14 */
+ 1391               	.L__stack_usage = 14
+ 1392 0558 E82E      		mov r14,r24
+ 1393 055a 062F      		mov r16,r22
+ 1394 055c 822E      		mov r8,r18
+ 231:glcd/graphics.c **** 	
+ 232:glcd/graphics.c **** 	int8_t f = 1 - r;
+ 1395               		.loc 1 232 0
+ 1396 055e 81E0      		ldi r24,lo8(1)
+ 1397               	.LVL157:
+ 1398 0560 F82E      		mov r15,r24
+ 1399 0562 F41A      		sub r15,r20
+ 1400               	.LVL158:
+ 233:glcd/graphics.c **** 	int8_t ddF_x = 1;
+ 234:glcd/graphics.c **** 	int8_t ddF_y = -2 * r;
+ 1401               		.loc 1 234 0
+ 1402 0564 942E      		mov r9,r20
+ 1403 0566 9194      		neg r9
+ 1404 0568 990C      		lsl r9
+ 1405               	.LVL159:
+ 235:glcd/graphics.c **** 	int8_t x = 0;
+ 236:glcd/graphics.c **** 	int8_t y = r;
+ 1406               		.loc 1 236 0
+ 1407 056a C42F      		mov r28,r20
+ 1408               	.LVL160:
+ 237:glcd/graphics.c **** 	
+ 238:glcd/graphics.c **** 	int16_t i;
+ 239:glcd/graphics.c **** 
+ 240:glcd/graphics.c **** 	glcd_update_bbox(x0-r, y0-r, x0+r, y0+r);
+ 1409               		.loc 1 240 0
+ 1410 056c 242F      		mov r18,r20
+ 1411               	.LVL161:
+ 1412 056e 260F      		add r18,r22
+ 1413 0570 4E0D      		add r20,r14
+ 1414               	.LVL162:
+ 1415 0572 6C1B      		sub r22,r28
+ 1416               	.LVL163:
+ 1417 0574 8E2D      		mov r24,r14
+ 1418 0576 8C1B      		sub r24,r28
+ 1419 0578 0E94 0000 		call glcd_update_bbox
+ 1420               	.LVL164:
+ 241:glcd/graphics.c **** 	
+ 242:glcd/graphics.c **** 	for (i=y0-r; i<=y0+r; i++) {
+ 1421               		.loc 1 242 0
+ 1422 057c 10E0      		ldi r17,0
+ 1423 057e CC2E      		mov r12,r28
+ 1424 0580 D12C      		mov r13,__zero_reg__
+ 1425 0582 5801      		movw r10,r16
+ 1426 0584 AC18      		sub r10,r12
+ 1427 0586 BD08      		sbc r11,r13
+ 1428               	.LVL165:
+ 1429 0588 C00E      		add r12,r16
+ 1430 058a D11E      		adc r13,r17
+ 1431               	.L52:
+ 1432               		.loc 1 242 0 is_stmt 0 discriminator 1
+ 1433 058c CA14      		cp r12,r10
+ 1434 058e DB04      		cpc r13,r11
+ 1435 0590 04F4      		brge .L53
+ 1436 0592 D0E0      		ldi r29,0
+ 1437               	.LVL166:
+ 1438               	.L60:
+ 243:glcd/graphics.c **** 		glcd_set_pixel(x0, i, color);
+ 244:glcd/graphics.c **** 	}
+ 245:glcd/graphics.c **** 	
+ 246:glcd/graphics.c **** 	while (x < y) {
+ 1439               		.loc 1 246 0 is_stmt 1
+ 1440 0594 DC17      		cp r29,r28
+ 1441 0596 04F0      		brlt .L61
+ 1442               	/* epilogue start */
+ 247:glcd/graphics.c **** 		if (f >= 0) {
+ 248:glcd/graphics.c **** 			y--;
+ 249:glcd/graphics.c **** 			ddF_y += 2;
+ 250:glcd/graphics.c **** 			f += ddF_y;
+ 251:glcd/graphics.c **** 		}
+ 252:glcd/graphics.c **** 		x++;
+ 253:glcd/graphics.c **** 		ddF_x += 2;
+ 254:glcd/graphics.c **** 		f += ddF_x;
+ 255:glcd/graphics.c **** 		
+ 256:glcd/graphics.c **** 		for (i=y0-y; i<=y0+y; i++) {
+ 257:glcd/graphics.c **** 			glcd_set_pixel(x0+x, i, color);
+ 258:glcd/graphics.c **** 			glcd_set_pixel(x0-x, i, color);
+ 259:glcd/graphics.c **** 		} 
+ 260:glcd/graphics.c **** 		for (i=y0-x; i<=y0+x; i++) {
+ 261:glcd/graphics.c **** 			glcd_set_pixel(x0+y, i, color);
+ 262:glcd/graphics.c **** 			glcd_set_pixel(x0-y, i, color);
+ 263:glcd/graphics.c **** 		}    
+ 264:glcd/graphics.c **** 	}
+ 265:glcd/graphics.c **** }
+ 1443               		.loc 1 265 0
+ 1444 0598 DF91      		pop r29
+ 1445               	.LVL167:
+ 1446 059a CF91      		pop r28
+ 1447               	.LVL168:
+ 1448 059c 1F91      		pop r17
+ 1449 059e 0F91      		pop r16
+ 1450               	.LVL169:
+ 1451 05a0 FF90      		pop r15
+ 1452               	.LVL170:
+ 1453 05a2 EF90      		pop r14
+ 1454               	.LVL171:
+ 1455 05a4 DF90      		pop r13
+ 1456 05a6 CF90      		pop r12
+ 1457 05a8 BF90      		pop r11
+ 1458 05aa AF90      		pop r10
+ 1459 05ac 9F90      		pop r9
+ 1460               	.LVL172:
+ 1461 05ae 8F90      		pop r8
+ 1462               	.LVL173:
+ 1463 05b0 7F90      		pop r7
+ 1464 05b2 6F90      		pop r6
+ 1465 05b4 0895      		ret
+ 1466               	.LVL174:
+ 1467               	.L53:
+ 243:glcd/graphics.c **** 		glcd_set_pixel(x0, i, color);
+ 1468               		.loc 1 243 0 discriminator 3
+ 1469 05b6 482D      		mov r20,r8
+ 1470 05b8 6A2D      		mov r22,r10
+ 1471 05ba 8E2D      		mov r24,r14
+ 1472 05bc 0E94 0000 		call glcd_set_pixel
+ 1473               	.LVL175:
+ 242:glcd/graphics.c **** 		glcd_set_pixel(x0, i, color);
+ 1474               		.loc 1 242 0 discriminator 3
+ 1475 05c0 8FEF      		ldi r24,-1
+ 1476 05c2 A81A      		sub r10,r24
+ 1477 05c4 B80A      		sbc r11,r24
+ 1478               	.LVL176:
+ 1479 05c6 00C0      		rjmp .L52
+ 1480               	.LVL177:
+ 1481               	.L61:
+ 247:glcd/graphics.c **** 		if (f >= 0) {
+ 1482               		.loc 1 247 0
+ 1483 05c8 F7FC      		sbrc r15,7
+ 1484 05ca 00C0      		rjmp .L55
+ 248:glcd/graphics.c **** 			ddF_y += 2;
+ 1485               		.loc 1 248 0
+ 1486 05cc C150      		subi r28,lo8(-(-1))
+ 1487               	.LVL178:
+ 249:glcd/graphics.c **** 			f += ddF_y;
+ 1488               		.loc 1 249 0
+ 1489 05ce 9394      		inc r9
+ 1490 05d0 9394      		inc r9
+ 1491               	.LVL179:
+ 250:glcd/graphics.c **** 		}
+ 1492               		.loc 1 250 0
+ 1493 05d2 F90C      		add r15,r9
+ 1494               	.LVL180:
+ 1495               	.L55:
+ 1496 05d4 DF5F      		subi r29,lo8(-(1))
+ 1497               	.LVL181:
+ 254:glcd/graphics.c **** 		
+ 1498               		.loc 1 254 0
+ 1499 05d6 8D2F      		mov r24,r29
+ 1500 05d8 880F      		lsl r24
+ 1501 05da 8F5F      		subi r24,lo8(-(1))
+ 1502               	.LVL182:
+ 1503 05dc F80E      		add r15,r24
+ 1504               	.LVL183:
+ 256:glcd/graphics.c **** 			glcd_set_pixel(x0+x, i, color);
+ 1505               		.loc 1 256 0
+ 1506 05de AC2E      		mov r10,r28
+ 1507 05e0 0C2E      		mov __tmp_reg__,r28
+ 1508 05e2 000C      		lsl r0
+ 1509 05e4 BB08      		sbc r11,r11
+ 1510 05e6 6801      		movw r12,r16
+ 1511 05e8 CA18      		sub r12,r10
+ 1512 05ea DB08      		sbc r13,r11
+ 1513               	.LVL184:
+ 1514 05ec A00E      		add r10,r16
+ 1515 05ee B11E      		adc r11,r17
+ 257:glcd/graphics.c **** 			glcd_set_pixel(x0-x, i, color);
+ 1516               		.loc 1 257 0
+ 1517 05f0 7E2C      		mov r7,r14
+ 1518 05f2 7D0E      		add r7,r29
+ 258:glcd/graphics.c **** 		} 
+ 1519               		.loc 1 258 0
+ 1520 05f4 6E2C      		mov r6,r14
+ 1521 05f6 6D1A      		sub r6,r29
+ 1522               	.LVL185:
+ 1523               	.L56:
+ 256:glcd/graphics.c **** 			glcd_set_pixel(x0+x, i, color);
+ 1524               		.loc 1 256 0 discriminator 1
+ 1525 05f8 AC14      		cp r10,r12
+ 1526 05fa BD04      		cpc r11,r13
+ 1527 05fc 04F4      		brge .L57
+ 260:glcd/graphics.c **** 			glcd_set_pixel(x0+y, i, color);
+ 1528               		.loc 1 260 0
+ 1529 05fe AD2E      		mov r10,r29
+ 1530 0600 0D2E      		mov __tmp_reg__,r29
+ 1531 0602 000C      		lsl r0
+ 1532 0604 BB08      		sbc r11,r11
+ 1533 0606 6801      		movw r12,r16
+ 1534               	.LVL186:
+ 1535 0608 CA18      		sub r12,r10
+ 1536 060a DB08      		sbc r13,r11
+ 1537               	.LVL187:
+ 1538 060c A00E      		add r10,r16
+ 1539 060e B11E      		adc r11,r17
+ 261:glcd/graphics.c **** 			glcd_set_pixel(x0-y, i, color);
+ 1540               		.loc 1 261 0
+ 1541 0610 7E2C      		mov r7,r14
+ 1542 0612 7C0E      		add r7,r28
+ 262:glcd/graphics.c **** 		}    
+ 1543               		.loc 1 262 0
+ 1544 0614 6E2C      		mov r6,r14
+ 1545 0616 6C1A      		sub r6,r28
+ 1546               	.L58:
+ 260:glcd/graphics.c **** 			glcd_set_pixel(x0+y, i, color);
+ 1547               		.loc 1 260 0 discriminator 1
+ 1548 0618 AC14      		cp r10,r12
+ 1549 061a BD04      		cpc r11,r13
+ 1550 061c 04F4      		brge .+2
+ 1551 061e 00C0      		rjmp .L60
+ 261:glcd/graphics.c **** 			glcd_set_pixel(x0-y, i, color);
+ 1552               		.loc 1 261 0 discriminator 3
+ 1553 0620 482D      		mov r20,r8
+ 1554 0622 6C2D      		mov r22,r12
+ 1555 0624 872D      		mov r24,r7
+ 1556 0626 0E94 0000 		call glcd_set_pixel
+ 1557               	.LVL188:
+ 262:glcd/graphics.c **** 		}    
+ 1558               		.loc 1 262 0 discriminator 3
+ 1559 062a 482D      		mov r20,r8
+ 1560 062c 6C2D      		mov r22,r12
+ 1561 062e 862D      		mov r24,r6
+ 1562 0630 0E94 0000 		call glcd_set_pixel
+ 1563               	.LVL189:
+ 260:glcd/graphics.c **** 			glcd_set_pixel(x0+y, i, color);
+ 1564               		.loc 1 260 0 discriminator 3
+ 1565 0634 8FEF      		ldi r24,-1
+ 1566 0636 C81A      		sub r12,r24
+ 1567 0638 D80A      		sbc r13,r24
+ 1568               	.LVL190:
+ 1569 063a 00C0      		rjmp .L58
+ 1570               	.L57:
+ 257:glcd/graphics.c **** 			glcd_set_pixel(x0-x, i, color);
+ 1571               		.loc 1 257 0 discriminator 3
+ 1572 063c 482D      		mov r20,r8
+ 1573 063e 6C2D      		mov r22,r12
+ 1574 0640 872D      		mov r24,r7
+ 1575 0642 0E94 0000 		call glcd_set_pixel
+ 1576               	.LVL191:
+ 258:glcd/graphics.c **** 		} 
+ 1577               		.loc 1 258 0 discriminator 3
+ 1578 0646 482D      		mov r20,r8
+ 1579 0648 6C2D      		mov r22,r12
+ 1580 064a 862D      		mov r24,r6
+ 1581 064c 0E94 0000 		call glcd_set_pixel
+ 1582               	.LVL192:
+ 256:glcd/graphics.c **** 			glcd_set_pixel(x0+x, i, color);
+ 1583               		.loc 1 256 0 discriminator 3
+ 1584 0650 8FEF      		ldi r24,-1
+ 1585 0652 C81A      		sub r12,r24
+ 1586 0654 D80A      		sbc r13,r24
+ 1587               	.LVL193:
+ 1588 0656 00C0      		rjmp .L56
+ 1589               		.cfi_endproc
+ 1590               	.LFE21:
+ 1592               	.global	glcd_invert_area
+ 1594               	glcd_invert_area:
+ 1595               	.LFB22:
+ 266:glcd/graphics.c **** 
+ 267:glcd/graphics.c **** void glcd_invert_area(uint8_t x, uint8_t y, uint8_t w, uint8_t h)
+ 268:glcd/graphics.c **** {
+ 1596               		.loc 1 268 0
+ 1597               		.cfi_startproc
+ 1598               	.LVL194:
+ 1599 0658 DF92      		push r13
+ 1600               	.LCFI84:
+ 1601               		.cfi_def_cfa_offset 3
+ 1602               		.cfi_offset 13, -2
+ 1603 065a EF92      		push r14
+ 1604               	.LCFI85:
+ 1605               		.cfi_def_cfa_offset 4
+ 1606               		.cfi_offset 14, -3
+ 1607 065c FF92      		push r15
+ 1608               	.LCFI86:
+ 1609               		.cfi_def_cfa_offset 5
+ 1610               		.cfi_offset 15, -4
+ 1611 065e 0F93      		push r16
+ 1612               	.LCFI87:
+ 1613               		.cfi_def_cfa_offset 6
+ 1614               		.cfi_offset 16, -5
+ 1615 0660 1F93      		push r17
+ 1616               	.LCFI88:
+ 1617               		.cfi_def_cfa_offset 7
+ 1618               		.cfi_offset 17, -6
+ 1619 0662 CF93      		push r28
+ 1620               	.LCFI89:
+ 1621               		.cfi_def_cfa_offset 8
+ 1622               		.cfi_offset 28, -7
+ 1623 0664 DF93      		push r29
+ 1624               	.LCFI90:
+ 1625               		.cfi_def_cfa_offset 9
+ 1626               		.cfi_offset 29, -8
+ 1627               	/* prologue: function */
+ 1628               	/* frame size = 0 */
+ 1629               	/* stack size = 7 */
+ 1630               	.L__stack_usage = 7
+ 1631 0666 D62E      		mov r13,r22
+ 1632               	.LVL195:
+ 269:glcd/graphics.c **** 	uint8_t xx, yy;
+ 270:glcd/graphics.c **** 	for (xx = x; xx < (x+w); xx++) {
+ 1633               		.loc 1 270 0
+ 1634 0668 C82F      		mov r28,r24
+ 1635 066a 042F      		mov r16,r20
+ 1636 066c 10E0      		ldi r17,0
+ 1637 066e 080F      		add r16,r24
+ 1638 0670 111D      		adc r17,__zero_reg__
+ 271:glcd/graphics.c **** 		/* Loop through each partial column */
+ 272:glcd/graphics.c **** 		for (yy = y; yy < (y+h); yy++) {
+ 1639               		.loc 1 272 0
+ 1640 0672 E22E      		mov r14,r18
+ 1641 0674 F12C      		mov r15,__zero_reg__
+ 1642 0676 E60E      		add r14,r22
+ 1643 0678 F11C      		adc r15,__zero_reg__
+ 1644               	.LVL196:
+ 1645               	.L63:
+ 270:glcd/graphics.c **** 		/* Loop through each partial column */
+ 1646               		.loc 1 270 0 discriminator 1
+ 1647 067a 8C2F      		mov r24,r28
+ 1648 067c 90E0      		ldi r25,0
+ 1649 067e 8017      		cp r24,r16
+ 1650 0680 9107      		cpc r25,r17
+ 1651 0682 04F4      		brge .L62
+ 1652               	.LVL197:
+ 1653 0684 DD2D      		mov r29,r13
+ 1654 0686 00C0      		rjmp .L66
+ 1655               	.LVL198:
+ 1656               	.L64:
+ 273:glcd/graphics.c **** 			/* Go down and invert every pixel */
+ 274:glcd/graphics.c **** 			glcd_invert_pixel(xx,yy);
+ 1657               		.loc 1 274 0 discriminator 3
+ 1658 0688 6D2F      		mov r22,r29
+ 1659 068a 8C2F      		mov r24,r28
+ 1660               	.LVL199:
+ 1661 068c 0E94 0000 		call glcd_invert_pixel
+ 1662               	.LVL200:
+ 272:glcd/graphics.c **** 			/* Go down and invert every pixel */
+ 1663               		.loc 1 272 0 discriminator 3
+ 1664 0690 DF5F      		subi r29,lo8(-(1))
+ 1665               	.LVL201:
+ 1666               	.L66:
+ 272:glcd/graphics.c **** 			/* Go down and invert every pixel */
+ 1667               		.loc 1 272 0 is_stmt 0 discriminator 1
+ 1668 0692 8D2F      		mov r24,r29
+ 1669 0694 90E0      		ldi r25,0
+ 1670 0696 8E15      		cp r24,r14
+ 1671 0698 9F05      		cpc r25,r15
+ 1672 069a 04F0      		brlt .L64
+ 270:glcd/graphics.c **** 		/* Loop through each partial column */
+ 1673               		.loc 1 270 0 is_stmt 1 discriminator 2
+ 1674 069c CF5F      		subi r28,lo8(-(1))
+ 1675               	.LVL202:
+ 1676 069e 00C0      		rjmp .L63
+ 1677               	.LVL203:
+ 1678               	.L62:
+ 1679               	/* epilogue start */
+ 275:glcd/graphics.c **** 		}
+ 276:glcd/graphics.c **** 	}
+ 277:glcd/graphics.c **** }
+ 1680               		.loc 1 277 0
+ 1681 06a0 DF91      		pop r29
+ 1682 06a2 CF91      		pop r28
+ 1683 06a4 1F91      		pop r17
+ 1684 06a6 0F91      		pop r16
+ 1685 06a8 FF90      		pop r15
+ 1686 06aa EF90      		pop r14
+ 1687 06ac DF90      		pop r13
+ 1688               	.LVL204:
+ 1689 06ae 0895      		ret
+ 1690               		.cfi_endproc
+ 1691               	.LFE22:
+ 1693               	.global	glcd_draw_bitmap
+ 1695               	glcd_draw_bitmap:
+ 1696               	.LFB23:
+ 278:glcd/graphics.c **** 
+ 279:glcd/graphics.c **** void glcd_draw_bitmap(const unsigned char *data)
+ 280:glcd/graphics.c **** {
+ 1697               		.loc 1 280 0
+ 1698               		.cfi_startproc
+ 1699               	.LVL205:
+ 1700               	/* prologue: function */
+ 1701               	/* frame size = 0 */
+ 1702               	/* stack size = 0 */
+ 1703               	.L__stack_usage = 0
+ 281:glcd/graphics.c **** 
+ 282:glcd/graphics.c **** #if 0
+ 283:glcd/graphics.c **** 	/* Testing purposes only: Writing to the LCD right away (not for AVR) */
+ 284:glcd/graphics.c **** 	/* Normally, we do not do this, we just write to the screen buffer */
+ 285:glcd/graphics.c **** 	uint8_t *original_buffer;
+ 286:glcd/graphics.c **** 
+ 287:glcd/graphics.c **** 	/* Save the location of original screen buffer */
+ 288:glcd/graphics.c **** 	original_buffer = glcd_buffer_selected;
+ 289:glcd/graphics.c **** 	
+ 290:glcd/graphics.c **** 	/* Use bitmap location as screen buffer (this won't work when using AVR8 PGM_P) */
+ 291:glcd/graphics.c **** 	glcd_select_screen((uint8_t *)data, glcd_bbox_selected);
+ 292:glcd/graphics.c **** 	
+ 293:glcd/graphics.c **** 	/* Make sure we write the entre display */
+ 294:glcd/graphics.c **** 	glcd_bbox_refresh(); 
+ 295:glcd/graphics.c **** 	glcd_write();
+ 296:glcd/graphics.c **** 	
+ 297:glcd/graphics.c **** 	/* Restore the screen buffer back to original */
+ 298:glcd/graphics.c **** 	glcd_select_screen(original_buffer, glcd_bbox_selected);	
+ 299:glcd/graphics.c **** #endif
+ 300:glcd/graphics.c **** 	
+ 301:glcd/graphics.c **** 	/* Copy bitmap data to the screen buffer */
+ 302:glcd/graphics.c **** #if defined(GLCD_DEVICE_AVR8)
+ 303:glcd/graphics.c **** 	memcpy_P(glcd_buffer_selected, data, (GLCD_LCD_WIDTH * GLCD_LCD_HEIGHT / 8));
+ 1704               		.loc 1 303 0
+ 1705 06b0 48EF      		ldi r20,lo8(-8)
+ 1706 06b2 51E0      		ldi r21,lo8(1)
+ 1707 06b4 BC01      		movw r22,r24
+ 1708 06b6 8091 0000 		lds r24,glcd_buffer_selected
+ 1709 06ba 9091 0000 		lds r25,glcd_buffer_selected+1
+ 1710               	.LVL206:
+ 1711 06be 0E94 0000 		call memcpy_P
+ 1712               	.LVL207:
+ 304:glcd/graphics.c **** #else
+ 305:glcd/graphics.c **** 	memcpy(glcd_buffer_selected, data, (GLCD_LCD_WIDTH * GLCD_LCD_HEIGHT / 8));
+ 306:glcd/graphics.c **** #endif
+ 307:glcd/graphics.c **** 
+ 308:glcd/graphics.c **** 	glcd_bbox_refresh(); 
+ 1713               		.loc 1 308 0
+ 1714 06c2 0C94 0000 		jmp glcd_bbox_refresh
+ 1715               	.LVL208:
+ 1716               		.cfi_endproc
+ 1717               	.LFE23:
+ 1719               	.Letext0:
+ 1720               		.file 2 "/usr/avr/include/stdint.h"
+ 1721               		.file 3 "/usr/lib/gcc/avr/6.3.0/include/stddef.h"
+ 1722               		.file 4 "/usr/avr/include/stdio.h"
+ 1723               		.file 5 "/usr/avr/include/stdlib.h"
+ 1724               		.file 6 "glcd/glcd.h"
+ 1725               		.file 7 "glcd/unit_tests.h"
+ 1726               		.file 8 "/usr/avr/include/avr/pgmspace.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 graphics.c
+     /tmp/ccl34VTN.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccl34VTN.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccl34VTN.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccl34VTN.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccl34VTN.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccl34VTN.s:12     .text:0000000000000000 glcd_set_pixel
+     /tmp/ccl34VTN.s:86     .text:0000000000000050 glcd_get_pixel
+     /tmp/ccl34VTN.s:140    .text:0000000000000088 glcd_invert_pixel
+     /tmp/ccl34VTN.s:215    .text:00000000000000d4 glcd_draw_line
+     /tmp/ccl34VTN.s:449    .text:00000000000001b2 glcd_fill_rect
+     /tmp/ccl34VTN.s:615    .text:0000000000000246 glcd_draw_rect
+     /tmp/ccl34VTN.s:778    .text:00000000000002ee glcd_draw_rect_thick
+     /tmp/ccl34VTN.s:1019   .text:00000000000003e6 glcd_draw_rect_shadow
+     /tmp/ccl34VTN.s:1096   .text:000000000000042c glcd_draw_circle
+     /tmp/ccl34VTN.s:1327   .text:000000000000053c glcd_fill_circle
+     /tmp/ccl34VTN.s:1594   .text:0000000000000658 glcd_invert_area
+     /tmp/ccl34VTN.s:1695   .text:00000000000006b0 glcd_draw_bitmap
+
+UNDEFINED SYMBOLS
+glcd_buffer
+glcd_update_bbox
+glcd_buffer_selected
+memcpy_P
+glcd_bbox_refresh

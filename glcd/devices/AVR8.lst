@@ -1,0 +1,411 @@
+   1               		.file	"AVR8.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	glcd_init
+  12               	glcd_init:
+  13               	.LFB7:
+  14               		.file 1 "glcd/devices/AVR8.c"
+   1:glcd/devices/AVR8.c **** /**
+   2:glcd/devices/AVR8.c ****    \file AVR8.c
+   3:glcd/devices/AVR8.c ****    \brief Functions relating to Atmel AVR 8-bit AVRs.
+   4:glcd/devices/AVR8.c ****           For use with GNU toolchain
+   5:glcd/devices/AVR8.c ****    \author Andy Gock
+   6:glcd/devices/AVR8.c **** 
+   7:glcd/devices/AVR8.c ****  */ 
+   8:glcd/devices/AVR8.c **** 
+   9:glcd/devices/AVR8.c **** /*
+  10:glcd/devices/AVR8.c **** 	Copyright (c) 2012, Andy Gock
+  11:glcd/devices/AVR8.c **** 
+  12:glcd/devices/AVR8.c **** 	All rights reserved.
+  13:glcd/devices/AVR8.c **** 
+  14:glcd/devices/AVR8.c **** 	Redistribution and use in source and binary forms, with or without
+  15:glcd/devices/AVR8.c **** 	modification, are permitted provided that the following conditions are met:
+  16:glcd/devices/AVR8.c **** 		* Redistributions of source code must retain the above copyright
+  17:glcd/devices/AVR8.c **** 		  notice, this list of conditions and the following disclaimer.
+  18:glcd/devices/AVR8.c **** 		* Redistributions in binary form must reproduce the above copyright
+  19:glcd/devices/AVR8.c **** 		  notice, this list of conditions and the following disclaimer in the
+  20:glcd/devices/AVR8.c **** 		  documentation and/or other materials provided with the distribution.
+  21:glcd/devices/AVR8.c **** 		* Neither the name of Andy Gock nor the
+  22:glcd/devices/AVR8.c **** 		  names of its contributors may be used to endorse or promote products
+  23:glcd/devices/AVR8.c **** 		  derived from this software without specific prior written permission.
+  24:glcd/devices/AVR8.c **** 
+  25:glcd/devices/AVR8.c **** 	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  26:glcd/devices/AVR8.c **** 	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  27:glcd/devices/AVR8.c **** 	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  28:glcd/devices/AVR8.c **** 	DISCLAIMED. IN NO EVENT SHALL ANDY GOCK BE LIABLE FOR ANY
+  29:glcd/devices/AVR8.c **** 	DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  30:glcd/devices/AVR8.c **** 	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  31:glcd/devices/AVR8.c **** 	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  32:glcd/devices/AVR8.c **** 	ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  33:glcd/devices/AVR8.c **** 	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  34:glcd/devices/AVR8.c **** 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  35:glcd/devices/AVR8.c **** */
+  36:glcd/devices/AVR8.c **** 
+  37:glcd/devices/AVR8.c **** #include "../glcd.h"
+  38:glcd/devices/AVR8.c **** 
+  39:glcd/devices/AVR8.c **** #if defined(GLCD_DEVICE_AVR8)
+  40:glcd/devices/AVR8.c **** 
+  41:glcd/devices/AVR8.c **** void glcd_init(void)
+  42:glcd/devices/AVR8.c **** {
+  15               		.loc 1 42 0
+  16               		.cfi_startproc
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  43:glcd/devices/AVR8.c **** 	
+  44:glcd/devices/AVR8.c **** #if defined(GLCD_CONTROLLER_PCD8544)
+  45:glcd/devices/AVR8.c **** 
+  46:glcd/devices/AVR8.c **** 	/* Set pin directions */
+  47:glcd/devices/AVR8.c **** 	
+  48:glcd/devices/AVR8.c **** 	/*
+  49:glcd/devices/AVR8.c **** 	 * Set up SPI for AVR8
+  50:glcd/devices/AVR8.c **** 	 * Note: AVR's SS pin must be set to output, regardless of whether we
+  51:glcd/devices/AVR8.c **** 	 * actually use it. This is a requirement of SPI mster mode.
+  52:glcd/devices/AVR8.c **** 	 */
+  53:glcd/devices/AVR8.c **** 	sbi(DDR(AVR_SS_PORT),AVR_SS_PIN);
+  21               		.loc 1 53 0
+  22 0000 209A      		sbi 0x4,0
+  54:glcd/devices/AVR8.c **** 	
+  55:glcd/devices/AVR8.c **** 	/*
+  56:glcd/devices/AVR8.c **** 	 *  Set MOSI, Master SS, SCK to output (otherwise SPI won't work)
+  57:glcd/devices/AVR8.c **** 	 *  Must be done even if native SS pin not used
+  58:glcd/devices/AVR8.c **** 	 */
+  59:glcd/devices/AVR8.c **** 	sbi(DDR(CONTROLLER_MOSI_PORT),CONTROLLER_MOSI_PIN);
+  23               		.loc 1 59 0
+  24 0002 239A      		sbi 0x4,3
+  60:glcd/devices/AVR8.c **** 	sbi(DDR(CONTROLLER_SS_PORT),CONTROLLER_SS_PIN);
+  25               		.loc 1 60 0
+  26 0004 209A      		sbi 0x4,0
+  61:glcd/devices/AVR8.c **** 	sbi(DDR(CONTROLLER_SCK_PORT),CONTROLLER_SCK_PIN);
+  27               		.loc 1 61 0
+  28 0006 259A      		sbi 0x4,5
+  62:glcd/devices/AVR8.c **** 		
+  63:glcd/devices/AVR8.c **** 	/* Set SS, DC and RST pins to output */
+  64:glcd/devices/AVR8.c **** 	sbi( DDR(CONTROLLER_SS_PORT), CONTROLLER_SS_PIN );
+  29               		.loc 1 64 0
+  30 0008 209A      		sbi 0x4,0
+  65:glcd/devices/AVR8.c **** 	sbi( DDR(CONTROLLER_DC_PORT), CONTROLLER_DC_PIN );
+  31               		.loc 1 65 0
+  32 000a 219A      		sbi 0x4,1
+  66:glcd/devices/AVR8.c **** 	sbi( DDR(CONTROLLER_RST_PORT), CONTROLLER_RST_PIN );
+  33               		.loc 1 66 0
+  34 000c 579A      		sbi 0xa,7
+  67:glcd/devices/AVR8.c **** 	
+  68:glcd/devices/AVR8.c **** 	/* Deselect LCD */
+  69:glcd/devices/AVR8.c **** 	GLCD_DESELECT();
+  35               		.loc 1 69 0
+  36 000e 289A      		sbi 0x5,0
+  70:glcd/devices/AVR8.c **** 
+  71:glcd/devices/AVR8.c **** 	/*
+  72:glcd/devices/AVR8.c **** 	 * Max allowed SPI clock is 4 MHz from datasheet.
+  73:glcd/devices/AVR8.c **** 	 * Enable SPI, set master mode and clock rate to /4 (4MHz with F_CPU=8MHz)
+  74:glcd/devices/AVR8.c **** 	 */
+  75:glcd/devices/AVR8.c **** 	SPCR = (1<<SPE)|(1<<MSTR);
+  37               		.loc 1 75 0
+  38 0010 80E5      		ldi r24,lo8(80)
+  39 0012 8CBD      		out 0x2c,r24
+  76:glcd/devices/AVR8.c **** 	SPSR = 0;
+  40               		.loc 1 76 0
+  41 0014 1DBC      		out 0x2d,__zero_reg__
+  77:glcd/devices/AVR8.c **** 	
+  78:glcd/devices/AVR8.c **** 	glcd_PCD8544_init();
+  42               		.loc 1 78 0
+  43 0016 0E94 0000 		call glcd_PCD8544_init
+  44               	.LVL0:
+  79:glcd/devices/AVR8.c **** 
+  80:glcd/devices/AVR8.c **** 	/* Select screen buffer */
+  81:glcd/devices/AVR8.c **** 	glcd_select_screen(glcd_buffer,&glcd_bbox);
+  45               		.loc 1 81 0
+  46 001a 60E0      		ldi r22,lo8(glcd_bbox)
+  47 001c 70E0      		ldi r23,hi8(glcd_bbox)
+  48 001e 80E0      		ldi r24,lo8(glcd_buffer)
+  49 0020 90E0      		ldi r25,hi8(glcd_buffer)
+  50 0022 0E94 0000 		call glcd_select_screen
+  51               	.LVL1:
+  82:glcd/devices/AVR8.c **** 	
+  83:glcd/devices/AVR8.c **** 	/* Clear screen, we are now ready to go */
+  84:glcd/devices/AVR8.c **** 	glcd_clear();
+  52               		.loc 1 84 0
+  53 0026 0C94 0000 		jmp glcd_clear
+  54               	.LVL2:
+  55               		.cfi_endproc
+  56               	.LFE7:
+  58               	.global	glcd_spi_write
+  60               	glcd_spi_write:
+  61               	.LFB8:
+  85:glcd/devices/AVR8.c **** 
+  86:glcd/devices/AVR8.c **** #elif defined(GLCD_CONTROLLER_ST7565R)
+  87:glcd/devices/AVR8.c **** 
+  88:glcd/devices/AVR8.c **** 	/* Set up GPIO directions */
+  89:glcd/devices/AVR8.c **** 	
+  90:glcd/devices/AVR8.c **** 	/*
+  91:glcd/devices/AVR8.c **** 	 * Set up SPI for AVR8
+  92:glcd/devices/AVR8.c **** 	 * Note: AVR's SS pin must be set to output, regardless of whether we
+  93:glcd/devices/AVR8.c **** 	 * actually use it. This is a requirement of SPI mster mode.
+  94:glcd/devices/AVR8.c **** 	 */
+  95:glcd/devices/AVR8.c **** 	sbi(DDR(AVR_SS_PORT),AVR_SS_PIN);
+  96:glcd/devices/AVR8.c **** 	
+  97:glcd/devices/AVR8.c **** 	/* Set SCK and MOSI as output */
+  98:glcd/devices/AVR8.c **** 	sbi(DDR(CONTROLLER_SCK_PORT),CONTROLLER_SCK_PIN);
+  99:glcd/devices/AVR8.c **** 	sbi(DDR(CONTROLLER_MOSI_PORT),CONTROLLER_MOSI_PIN);
+ 100:glcd/devices/AVR8.c **** 	
+ 101:glcd/devices/AVR8.c **** 	/*
+ 102:glcd/devices/AVR8.c **** 	 * Set MISO as input with pullup. This needs to be set for
+ 103:glcd/devices/AVR8.c **** 	 * SPI to work, even though we never use or read it.
+ 104:glcd/devices/AVR8.c **** 	 */
+ 105:glcd/devices/AVR8.c **** 	cbi(DDR(CONTROLLER_MISO_PORT),CONTROLLER_MISO_PIN); // B3 MISO as input
+ 106:glcd/devices/AVR8.c **** 	sbi(CONTROLLER_MISO_PORT,CONTROLLER_MISO_PIN);
+ 107:glcd/devices/AVR8.c **** 	
+ 108:glcd/devices/AVR8.c **** 	/* Set pin to controller SS as output */
+ 109:glcd/devices/AVR8.c **** 	sbi(DDR(CONTROLLER_SS_PORT),CONTROLLER_SS_PIN); // A5
+ 110:glcd/devices/AVR8.c **** 
+ 111:glcd/devices/AVR8.c **** 	/* Set LCD A0 pin as output */
+ 112:glcd/devices/AVR8.c **** 	sbi(DDR(CONTROLLER_A0_PORT),CONTROLLER_A0_PIN); // A6
+ 113:glcd/devices/AVR8.c **** 		
+ 114:glcd/devices/AVR8.c **** 	/* Init SS pin high (i.e LCD deselected) */
+ 115:glcd/devices/AVR8.c **** 	sbi(CONTROLLER_SS_PORT,CONTROLLER_SS_PIN);
+ 116:glcd/devices/AVR8.c **** 
+ 117:glcd/devices/AVR8.c **** 	/* Deselect LCD */
+ 118:glcd/devices/AVR8.c **** 	GLCD_DESELECT();
+ 119:glcd/devices/AVR8.c **** 
+ 120:glcd/devices/AVR8.c **** 	/* MSB first, double speed, SPI mode 0 */
+ 121:glcd/devices/AVR8.c **** 	SPCR = (1<<SPE) | (1<<MSTR) | (0<<CPOL) | (0<<CPHA);	
+ 122:glcd/devices/AVR8.c **** 	sbi(SPSR,SPI2X);
+ 123:glcd/devices/AVR8.c **** 	
+ 124:glcd/devices/AVR8.c **** 	/* Enable interrupts */
+ 125:glcd/devices/AVR8.c **** 	sei();
+ 126:glcd/devices/AVR8.c **** 		
+ 127:glcd/devices/AVR8.c **** 	delay_ms(30); /* Example in datasheet does this (20ms) */
+ 128:glcd/devices/AVR8.c **** 
+ 129:glcd/devices/AVR8.c **** 	glcd_ST7565R_init();
+ 130:glcd/devices/AVR8.c **** 
+ 131:glcd/devices/AVR8.c **** 	glcd_all_on();
+ 132:glcd/devices/AVR8.c **** 	
+ 133:glcd/devices/AVR8.c **** 	delay_ms(500);
+ 134:glcd/devices/AVR8.c **** 	glcd_normal();
+ 135:glcd/devices/AVR8.c **** 
+ 136:glcd/devices/AVR8.c **** 	glcd_set_start_line(0);
+ 137:glcd/devices/AVR8.c **** 	glcd_clear_now();
+ 138:glcd/devices/AVR8.c **** 			
+ 139:glcd/devices/AVR8.c **** 	glcd_select_screen(glcd_buffer,&glcd_bbox);
+ 140:glcd/devices/AVR8.c **** 	
+ 141:glcd/devices/AVR8.c **** 	glcd_clear();	
+ 142:glcd/devices/AVR8.c **** 	
+ 143:glcd/devices/AVR8.c **** #else
+ 144:glcd/devices/AVR8.c **** 	#error "Controller not supported"
+ 145:glcd/devices/AVR8.c **** #endif /* GLCD_CONTROLLER_* */
+ 146:glcd/devices/AVR8.c **** 	
+ 147:glcd/devices/AVR8.c **** }
+ 148:glcd/devices/AVR8.c **** 
+ 149:glcd/devices/AVR8.c **** void glcd_spi_write(uint8_t c)
+ 150:glcd/devices/AVR8.c **** {
+  62               		.loc 1 150 0
+  63               		.cfi_startproc
+  64               	.LVL3:
+  65               	/* prologue: function */
+  66               	/* frame size = 0 */
+  67               	/* stack size = 0 */
+  68               	.L__stack_usage = 0
+ 151:glcd/devices/AVR8.c **** 	GLCD_SELECT();
+  69               		.loc 1 151 0
+  70 002a 2898      		cbi 0x5,0
+ 152:glcd/devices/AVR8.c **** 	SPDR = c;
+  71               		.loc 1 152 0
+  72 002c 8EBD      		out 0x2e,r24
+  73               	.L3:
+ 153:glcd/devices/AVR8.c **** 	while(!(SPSR & (1<<SPIF))); /* wait until transmission is complete */
+  74               		.loc 1 153 0 discriminator 1
+  75 002e 0DB4      		in __tmp_reg__,0x2d
+  76 0030 07FE      		sbrs __tmp_reg__,7
+  77 0032 00C0      		rjmp .L3
+ 154:glcd/devices/AVR8.c **** 	GLCD_DESELECT();	
+  78               		.loc 1 154 0
+  79 0034 289A      		sbi 0x5,0
+  80 0036 0895      		ret
+  81               		.cfi_endproc
+  82               	.LFE8:
+  84               	.global	glcd_reset
+  86               	glcd_reset:
+  87               	.LFB9:
+ 155:glcd/devices/AVR8.c **** }
+ 156:glcd/devices/AVR8.c **** 
+ 157:glcd/devices/AVR8.c **** void glcd_reset(void)
+ 158:glcd/devices/AVR8.c **** {
+  88               		.loc 1 158 0
+  89               		.cfi_startproc
+  90               	/* prologue: function */
+  91               	/* frame size = 0 */
+  92               	/* stack size = 0 */
+  93               	.L__stack_usage = 0
+ 159:glcd/devices/AVR8.c **** 	/* Toggle RST low to reset. Minimum pulse 100ns on datasheet. */
+ 160:glcd/devices/AVR8.c **** 	GLCD_SELECT();
+  94               		.loc 1 160 0
+  95 0038 2898      		cbi 0x5,0
+ 161:glcd/devices/AVR8.c **** 	GLCD_RESET_LOW();
+  96               		.loc 1 161 0
+  97 003a 5F98      		cbi 0xb,7
+  98               	.LVL4:
+  99               	.LBB12:
+ 100               	.LBB13:
+ 101               	.LBB14:
+ 102               	.LBB15:
+ 103               		.file 2 "/usr/avr/include/util/delay_basic.h"
+   1:/usr/avr/include/util/delay_basic.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:/usr/avr/include/util/delay_basic.h ****    Copyright (c) 2007 Joerg Wunsch
+   3:/usr/avr/include/util/delay_basic.h ****    All rights reserved.
+   4:/usr/avr/include/util/delay_basic.h **** 
+   5:/usr/avr/include/util/delay_basic.h ****    Redistribution and use in source and binary forms, with or without
+   6:/usr/avr/include/util/delay_basic.h ****    modification, are permitted provided that the following conditions are met:
+   7:/usr/avr/include/util/delay_basic.h **** 
+   8:/usr/avr/include/util/delay_basic.h ****    * Redistributions of source code must retain the above copyright
+   9:/usr/avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer.
+  10:/usr/avr/include/util/delay_basic.h **** 
+  11:/usr/avr/include/util/delay_basic.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:/usr/avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer in
+  13:/usr/avr/include/util/delay_basic.h ****      the documentation and/or other materials provided with the
+  14:/usr/avr/include/util/delay_basic.h ****      distribution.
+  15:/usr/avr/include/util/delay_basic.h **** 
+  16:/usr/avr/include/util/delay_basic.h ****    * Neither the name of the copyright holders nor the names of
+  17:/usr/avr/include/util/delay_basic.h ****      contributors may be used to endorse or promote products derived
+  18:/usr/avr/include/util/delay_basic.h ****      from this software without specific prior written permission.
+  19:/usr/avr/include/util/delay_basic.h **** 
+  20:/usr/avr/include/util/delay_basic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:/usr/avr/include/util/delay_basic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:/usr/avr/include/util/delay_basic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:/usr/avr/include/util/delay_basic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:/usr/avr/include/util/delay_basic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:/usr/avr/include/util/delay_basic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:/usr/avr/include/util/delay_basic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:/usr/avr/include/util/delay_basic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:/usr/avr/include/util/delay_basic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:/usr/avr/include/util/delay_basic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:/usr/avr/include/util/delay_basic.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:/usr/avr/include/util/delay_basic.h **** 
+  32:/usr/avr/include/util/delay_basic.h **** /* $Id: delay_basic.h 2453 2014-10-19 08:18:11Z saaadhu $ */
+  33:/usr/avr/include/util/delay_basic.h **** 
+  34:/usr/avr/include/util/delay_basic.h **** #ifndef _UTIL_DELAY_BASIC_H_
+  35:/usr/avr/include/util/delay_basic.h **** #define _UTIL_DELAY_BASIC_H_ 1
+  36:/usr/avr/include/util/delay_basic.h **** 
+  37:/usr/avr/include/util/delay_basic.h **** #include <inttypes.h>
+  38:/usr/avr/include/util/delay_basic.h **** 
+  39:/usr/avr/include/util/delay_basic.h **** #if !defined(__DOXYGEN__)
+  40:/usr/avr/include/util/delay_basic.h **** static __inline__ void _delay_loop_1(uint8_t __count) __attribute__((__always_inline__));
+  41:/usr/avr/include/util/delay_basic.h **** static __inline__ void _delay_loop_2(uint16_t __count) __attribute__((__always_inline__));
+  42:/usr/avr/include/util/delay_basic.h **** #endif
+  43:/usr/avr/include/util/delay_basic.h **** 
+  44:/usr/avr/include/util/delay_basic.h **** /** \file */
+  45:/usr/avr/include/util/delay_basic.h **** /** \defgroup util_delay_basic <util/delay_basic.h>: Basic busy-wait delay loops
+  46:/usr/avr/include/util/delay_basic.h ****     \code
+  47:/usr/avr/include/util/delay_basic.h ****     #include <util/delay_basic.h>
+  48:/usr/avr/include/util/delay_basic.h ****     \endcode
+  49:/usr/avr/include/util/delay_basic.h **** 
+  50:/usr/avr/include/util/delay_basic.h ****     The functions in this header file implement simple delay loops
+  51:/usr/avr/include/util/delay_basic.h ****     that perform a busy-waiting.  They are typically used to
+  52:/usr/avr/include/util/delay_basic.h ****     facilitate short delays in the program execution.  They are
+  53:/usr/avr/include/util/delay_basic.h ****     implemented as count-down loops with a well-known CPU cycle
+  54:/usr/avr/include/util/delay_basic.h ****     count per loop iteration.  As such, no other processing can
+  55:/usr/avr/include/util/delay_basic.h ****     occur simultaneously.  It should be kept in mind that the
+  56:/usr/avr/include/util/delay_basic.h ****     functions described here do not disable interrupts.
+  57:/usr/avr/include/util/delay_basic.h **** 
+  58:/usr/avr/include/util/delay_basic.h ****     In general, for long delays, the use of hardware timers is
+  59:/usr/avr/include/util/delay_basic.h ****     much preferrable, as they free the CPU, and allow for
+  60:/usr/avr/include/util/delay_basic.h ****     concurrent processing of other events while the timer is
+  61:/usr/avr/include/util/delay_basic.h ****     running.  However, in particular for very short delays, the
+  62:/usr/avr/include/util/delay_basic.h ****     overhead of setting up a hardware timer is too much compared
+  63:/usr/avr/include/util/delay_basic.h ****     to the overall delay time.
+  64:/usr/avr/include/util/delay_basic.h **** 
+  65:/usr/avr/include/util/delay_basic.h ****     Two inline functions are provided for the actual delay algorithms.
+  66:/usr/avr/include/util/delay_basic.h **** 
+  67:/usr/avr/include/util/delay_basic.h **** */
+  68:/usr/avr/include/util/delay_basic.h **** 
+  69:/usr/avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  70:/usr/avr/include/util/delay_basic.h **** 
+  71:/usr/avr/include/util/delay_basic.h ****     Delay loop using an 8-bit counter \c __count, so up to 256
+  72:/usr/avr/include/util/delay_basic.h ****     iterations are possible.  (The value 256 would have to be passed
+  73:/usr/avr/include/util/delay_basic.h ****     as 0.)  The loop executes three CPU cycles per iteration, not
+  74:/usr/avr/include/util/delay_basic.h ****     including the overhead the compiler needs to setup the counter
+  75:/usr/avr/include/util/delay_basic.h ****     register.
+  76:/usr/avr/include/util/delay_basic.h **** 
+  77:/usr/avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to 768 microseconds
+  78:/usr/avr/include/util/delay_basic.h ****     can be achieved.
+  79:/usr/avr/include/util/delay_basic.h **** */
+  80:/usr/avr/include/util/delay_basic.h **** void
+  81:/usr/avr/include/util/delay_basic.h **** _delay_loop_1(uint8_t __count)
+  82:/usr/avr/include/util/delay_basic.h **** {
+  83:/usr/avr/include/util/delay_basic.h **** 	__asm__ volatile (
+  84:/usr/avr/include/util/delay_basic.h **** 		"1: dec %0" "\n\t"
+  85:/usr/avr/include/util/delay_basic.h **** 		"brne 1b"
+  86:/usr/avr/include/util/delay_basic.h **** 		: "=r" (__count)
+  87:/usr/avr/include/util/delay_basic.h **** 		: "0" (__count)
+  88:/usr/avr/include/util/delay_basic.h **** 	);
+  89:/usr/avr/include/util/delay_basic.h **** }
+  90:/usr/avr/include/util/delay_basic.h **** 
+  91:/usr/avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  92:/usr/avr/include/util/delay_basic.h **** 
+  93:/usr/avr/include/util/delay_basic.h ****     Delay loop using a 16-bit counter \c __count, so up to 65536
+  94:/usr/avr/include/util/delay_basic.h ****     iterations are possible.  (The value 65536 would have to be
+  95:/usr/avr/include/util/delay_basic.h ****     passed as 0.)  The loop executes four CPU cycles per iteration,
+  96:/usr/avr/include/util/delay_basic.h ****     not including the overhead the compiler requires to setup the
+  97:/usr/avr/include/util/delay_basic.h ****     counter register pair.
+  98:/usr/avr/include/util/delay_basic.h **** 
+  99:/usr/avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to about 262.1
+ 100:/usr/avr/include/util/delay_basic.h ****     milliseconds can be achieved.
+ 101:/usr/avr/include/util/delay_basic.h ****  */
+ 102:/usr/avr/include/util/delay_basic.h **** void
+ 103:/usr/avr/include/util/delay_basic.h **** _delay_loop_2(uint16_t __count)
+ 104:/usr/avr/include/util/delay_basic.h **** {
+ 105:/usr/avr/include/util/delay_basic.h **** 	__asm__ volatile (
+ 104               		.loc 2 105 0
+ 105 003c 80EA      		ldi r24,lo8(-96)
+ 106 003e 9FE0      		ldi r25,lo8(15)
+ 107               	/* #APP */
+ 108               	 ;  105 "/usr/avr/include/util/delay_basic.h" 1
+ 109 0040 0197      		1: sbiw r24,1
+ 110 0042 01F4      		brne 1b
+ 111               	 ;  0 "" 2
+ 112               	.LVL5:
+ 113               	/* #NOAPP */
+ 114               	.LBE15:
+ 115               	.LBE14:
+ 116               	.LBE13:
+ 117               	.LBE12:
+ 162:glcd/devices/AVR8.c **** 	delay_ms(GLCD_RESET_TIME);
+ 163:glcd/devices/AVR8.c **** 	GLCD_RESET_HIGH();
+ 118               		.loc 1 163 0
+ 119 0044 5F9A      		sbi 0xb,7
+ 164:glcd/devices/AVR8.c **** 	GLCD_DESELECT();	
+ 120               		.loc 1 164 0
+ 121 0046 289A      		sbi 0x5,0
+ 122 0048 0895      		ret
+ 123               		.cfi_endproc
+ 124               	.LFE9:
+ 126               	.Letext0:
+ 127               		.file 3 "/usr/avr/include/stdint.h"
+ 128               		.file 4 "glcd/devices/../glcd.h"
+ 129               		.file 5 "glcd/devices/../unit_tests.h"
+ 130               		.file 6 "/usr/avr/include/util/delay.h"
+ 131               		.file 7 "glcd/devices/../controllers/PCD8544.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 AVR8.c
+     /tmp/ccOqLvnz.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccOqLvnz.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccOqLvnz.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccOqLvnz.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccOqLvnz.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccOqLvnz.s:12     .text:0000000000000000 glcd_init
+     /tmp/ccOqLvnz.s:60     .text:000000000000002a glcd_spi_write
+     /tmp/ccOqLvnz.s:86     .text:0000000000000038 glcd_reset
+
+UNDEFINED SYMBOLS
+glcd_PCD8544_init
+glcd_bbox
+glcd_buffer
+glcd_select_screen
+glcd_clear

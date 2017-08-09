@@ -1,0 +1,968 @@
+   1               		.file	"text_tiny.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	glcd_tiny_set_font
+  12               	glcd_tiny_set_font:
+  13               	.LFB7:
+  14               		.file 1 "glcd/text_tiny.c"
+   1:glcd/text_tiny.c **** /**
+   2:glcd/text_tiny.c ****    \file text_tiny.c
+   3:glcd/text_tiny.c ****    \brief Functions relating to using tiny 5x7 text fonts.
+   4:glcd/text_tiny.c ****    \author Andy Gock
+   5:glcd/text_tiny.c ****  */ 
+   6:glcd/text_tiny.c **** 
+   7:glcd/text_tiny.c **** /*
+   8:glcd/text_tiny.c **** 	Copyright (c) 2012, Andy Gock
+   9:glcd/text_tiny.c **** 
+  10:glcd/text_tiny.c **** 	All rights reserved.
+  11:glcd/text_tiny.c **** 
+  12:glcd/text_tiny.c **** 	Redistribution and use in source and binary forms, with or without
+  13:glcd/text_tiny.c **** 	modification, are permitted provided that the following conditions are met:
+  14:glcd/text_tiny.c **** 		* Redistributions of source code must retain the above copyright
+  15:glcd/text_tiny.c **** 		  notice, this list of conditions and the following disclaimer.
+  16:glcd/text_tiny.c **** 		* Redistributions in binary form must reproduce the above copyright
+  17:glcd/text_tiny.c **** 		  notice, this list of conditions and the following disclaimer in the
+  18:glcd/text_tiny.c **** 		  documentation and/or other materials provided with the distribution.
+  19:glcd/text_tiny.c **** 		* Neither the name of Andy Gock nor the
+  20:glcd/text_tiny.c **** 		  names of its contributors may be used to endorse or promote products
+  21:glcd/text_tiny.c **** 		  derived from this software without specific prior written permission.
+  22:glcd/text_tiny.c **** 
+  23:glcd/text_tiny.c **** 	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  24:glcd/text_tiny.c **** 	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  25:glcd/text_tiny.c **** 	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  26:glcd/text_tiny.c **** 	DISCLAIMED. IN NO EVENT SHALL ANDY GOCK BE LIABLE FOR ANY
+  27:glcd/text_tiny.c **** 	DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  28:glcd/text_tiny.c **** 	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  29:glcd/text_tiny.c **** 	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  30:glcd/text_tiny.c **** 	ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  31:glcd/text_tiny.c **** 	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  32:glcd/text_tiny.c **** 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  33:glcd/text_tiny.c **** */
+  34:glcd/text_tiny.c **** 
+  35:glcd/text_tiny.c **** #include "glcd.h"
+  36:glcd/text_tiny.c **** 
+  37:glcd/text_tiny.c **** #if defined(GLCD_DEVICE_AVR8)
+  38:glcd/text_tiny.c **** void glcd_tiny_set_font(PGM_P font_table, uint8_t width, uint8_t height, char start_char, char end_
+  39:glcd/text_tiny.c **** #else
+  40:glcd/text_tiny.c **** void glcd_tiny_set_font(const char * font_table, uint8_t width, uint8_t height, char start_char, ch
+  41:glcd/text_tiny.c **** #endif
+  42:glcd/text_tiny.c **** {
+  15               		.loc 1 42 0
+  16               		.cfi_startproc
+  17               	.LVL0:
+  18 0000 0F93      		push r16
+  19               	.LCFI0:
+  20               		.cfi_def_cfa_offset 3
+  21               		.cfi_offset 16, -2
+  22               	/* prologue: function */
+  23               	/* frame size = 0 */
+  24               	/* stack size = 1 */
+  25               	.L__stack_usage = 1
+  43:glcd/text_tiny.c **** 	font_current.font_table = font_table;
+  26               		.loc 1 43 0
+  27 0002 E0E0      		ldi r30,lo8(font_current)
+  28 0004 F0E0      		ldi r31,hi8(font_current)
+  29 0006 9183      		std Z+1,r25
+  30 0008 8083      		st Z,r24
+  44:glcd/text_tiny.c **** 	font_current.width = width;
+  31               		.loc 1 44 0
+  32 000a 6283      		std Z+2,r22
+  45:glcd/text_tiny.c **** 	font_current.height = height;
+  33               		.loc 1 45 0
+  34 000c 4383      		std Z+3,r20
+  46:glcd/text_tiny.c **** 	font_current.start_char = start_char;
+  35               		.loc 1 46 0
+  36 000e 2483      		std Z+4,r18
+  47:glcd/text_tiny.c **** 	font_current.end_char = end_char;
+  37               		.loc 1 47 0
+  38 0010 0583      		std Z+5,r16
+  48:glcd/text_tiny.c **** 	font_current.table_type = STANG;
+  39               		.loc 1 48 0
+  40 0012 1682      		std Z+6,__zero_reg__
+  41               	/* epilogue start */
+  49:glcd/text_tiny.c **** }
+  42               		.loc 1 49 0
+  43 0014 0F91      		pop r16
+  44               	.LVL1:
+  45 0016 0895      		ret
+  46               		.cfi_endproc
+  47               	.LFE7:
+  49               	.global	glcd_tiny_draw_char
+  51               	glcd_tiny_draw_char:
+  52               	.LFB8:
+  50:glcd/text_tiny.c **** 
+  51:glcd/text_tiny.c **** void glcd_tiny_draw_char(uint8_t x, uint8_t line, char c)
+  52:glcd/text_tiny.c **** {
+  53               		.loc 1 52 0
+  54               		.cfi_startproc
+  55               	.LVL2:
+  56 0018 1F93      		push r17
+  57               	.LCFI1:
+  58               		.cfi_def_cfa_offset 3
+  59               		.cfi_offset 17, -2
+  60 001a CF93      		push r28
+  61               	.LCFI2:
+  62               		.cfi_def_cfa_offset 4
+  63               		.cfi_offset 28, -3
+  64 001c DF93      		push r29
+  65               	.LCFI3:
+  66               		.cfi_def_cfa_offset 5
+  67               		.cfi_offset 29, -4
+  68               	/* prologue: function */
+  69               	/* frame size = 0 */
+  70               	/* stack size = 3 */
+  71               	.L__stack_usage = 3
+  72 001e C82F      		mov r28,r24
+  73 0020 162F      		mov r17,r22
+  74 0022 D42F      		mov r29,r20
+  53:glcd/text_tiny.c **** 	uint8_t i;
+  54:glcd/text_tiny.c **** 	
+  55:glcd/text_tiny.c **** 	/* Only works for fonts < 8 bits in height */
+  56:glcd/text_tiny.c **** 	if (font_current.height >= 8) {
+  75               		.loc 1 56 0
+  76 0024 E091 0000 		lds r30,font_current+3
+  77 0028 E830      		cpi r30,lo8(8)
+  78 002a 00F4      		brsh .L2
+  57:glcd/text_tiny.c **** 		return;
+  58:glcd/text_tiny.c **** 	}
+  59:glcd/text_tiny.c **** 	if (c < font_current.start_char || c > font_current.end_char) {
+  79               		.loc 1 59 0
+  80 002c 8091 0000 		lds r24,font_current+4
+  81               	.LVL3:
+  82 0030 4817      		cp r20,r24
+  83 0032 00F0      		brlo .L8
+  84               		.loc 1 59 0 is_stmt 0 discriminator 1
+  85 0034 8091 0000 		lds r24,font_current+5
+  86 0038 8417      		cp r24,r20
+  87 003a 00F4      		brsh .L4
+  88               	.L8:
+  60:glcd/text_tiny.c **** 		c = '.';
+  89               		.loc 1 60 0 is_stmt 1
+  90 003c DEE2      		ldi r29,lo8(46)
+  91               	.L4:
+  92               	.LVL4:
+  61:glcd/text_tiny.c **** 	}
+  62:glcd/text_tiny.c **** 	if ( line >= GLCD_LCD_HEIGHT / (font_current.height + 1) ) {
+  93               		.loc 1 62 0
+  94 003e 212F      		mov r18,r17
+  95 0040 30E0      		ldi r19,0
+  96 0042 F0E0      		ldi r31,0
+  97 0044 3196      		adiw r30,1
+  98 0046 80E3      		ldi r24,lo8(48)
+  99 0048 90E0      		ldi r25,0
+ 100 004a BF01      		movw r22,r30
+ 101               	.LVL5:
+ 102 004c 0E94 0000 		call __divmodhi4
+ 103 0050 2617      		cp r18,r22
+ 104 0052 3707      		cpc r19,r23
+ 105 0054 04F4      		brge .L2
+  63:glcd/text_tiny.c **** 		return;
+  64:glcd/text_tiny.c **** 	}		
+  65:glcd/text_tiny.c **** 	if ( (x+font_current.width) >= GLCD_LCD_WIDTH ) {
+ 106               		.loc 1 65 0
+ 107 0056 4091 0000 		lds r20,font_current+2
+ 108 005a 842F      		mov r24,r20
+ 109 005c 90E0      		ldi r25,0
+ 110 005e 8C0F      		add r24,r28
+ 111 0060 911D      		adc r25,__zero_reg__
+ 112 0062 8435      		cpi r24,84
+ 113 0064 9105      		cpc r25,__zero_reg__
+ 114 0066 04F4      		brge .L2
+  66:glcd/text_tiny.c **** 		return;
+  67:glcd/text_tiny.c **** 	}		
+  68:glcd/text_tiny.c **** 	
+  69:glcd/text_tiny.c **** 	glcd_update_bbox(x, line*(font_current.height + 1), x+font_current.width, line*(font_current.heigh
+ 115               		.loc 1 69 0
+ 116 0068 8E2F      		mov r24,r30
+ 117 006a 1E9F      		mul r17,r30
+ 118 006c 800D      		add r24,r0
+ 119 006e 1124      		clr __zero_reg__
+ 120 0070 282F      		mov r18,r24
+ 121 0072 4C0F      		add r20,r28
+ 122 0074 1E9F      		mul r17,r30
+ 123 0076 602D      		mov r22,r0
+ 124 0078 1124      		clr r1
+ 125 007a 8C2F      		mov r24,r28
+ 126 007c 0E94 0000 		call glcd_update_bbox
+ 127               	.LVL6:
+  70:glcd/text_tiny.c **** 	
+  71:glcd/text_tiny.c **** 	for ( i = 0; i < font_current.width; i++ ) {
+  72:glcd/text_tiny.c **** #if defined(GLCD_DEVICE_AVR8)		
+  73:glcd/text_tiny.c **** 		glcd_buffer_selected[x + (line * GLCD_LCD_WIDTH)] = pgm_read_byte( font_current.font_table + ((c 
+ 128               		.loc 1 73 0
+ 129 0080 E4E5      		ldi r30,lo8(84)
+ 130 0082 1E9F      		mul r17,r30
+ 131 0084 B001      		movw r22,r0
+ 132 0086 1124      		clr __zero_reg__
+  71:glcd/text_tiny.c **** #if defined(GLCD_DEVICE_AVR8)		
+ 133               		.loc 1 71 0
+ 134 0088 80E0      		ldi r24,0
+ 135               	.LBB4:
+ 136               		.loc 1 73 0
+ 137 008a 4D2F      		mov r20,r29
+ 138 008c 50E0      		ldi r21,0
+ 139               	.LVL7:
+ 140               	.L6:
+ 141 008e D82F      		mov r29,r24
+ 142 0090 DC0F      		add r29,r28
+ 143               	.LVL8:
+ 144               	.LBE4:
+  71:glcd/text_tiny.c **** #if defined(GLCD_DEVICE_AVR8)		
+ 145               		.loc 1 71 0 discriminator 1
+ 146 0092 9091 0000 		lds r25,font_current+2
+ 147 0096 8917      		cp r24,r25
+ 148 0098 00F0      		brlo .L7
+ 149               	.LVL9:
+ 150               	.L2:
+ 151               	/* epilogue start */
+  74:glcd/text_tiny.c **** #else
+  75:glcd/text_tiny.c **** 		glcd_buffer_selected[x + (line * GLCD_LCD_WIDTH)] = *( font_current.font_table + ((c - font_curre
+  76:glcd/text_tiny.c **** #endif
+  77:glcd/text_tiny.c **** 		x++;
+  78:glcd/text_tiny.c **** 	}
+  79:glcd/text_tiny.c **** }
+ 152               		.loc 1 79 0
+ 153 009a DF91      		pop r29
+ 154 009c CF91      		pop r28
+ 155 009e 1F91      		pop r17
+ 156               	.LVL10:
+ 157 00a0 0895      		ret
+ 158               	.LVL11:
+ 159               	.L7:
+ 160               	.LBB5:
+  73:glcd/text_tiny.c **** #else
+ 161               		.loc 1 73 0 discriminator 3
+ 162 00a2 2091 0000 		lds r18,font_current+4
+ 163 00a6 FA01      		movw r30,r20
+ 164 00a8 E21B      		sub r30,r18
+ 165 00aa F109      		sbc r31,__zero_reg__
+ 166 00ac 9F01      		movw r18,r30
+ 167 00ae 929F      		mul r25,r18
+ 168 00b0 F001      		movw r30,r0
+ 169 00b2 939F      		mul r25,r19
+ 170 00b4 F00D      		add r31,r0
+ 171 00b6 1124      		clr __zero_reg__
+ 172 00b8 9F01      		movw r18,r30
+ 173 00ba 280F      		add r18,r24
+ 174 00bc 311D      		adc r19,__zero_reg__
+ 175 00be E091 0000 		lds r30,font_current
+ 176 00c2 F091 0000 		lds r31,font_current+1
+ 177 00c6 E20F      		add r30,r18
+ 178 00c8 F31F      		adc r31,r19
+ 179               	/* #APP */
+ 180               	 ;  73 "glcd/text_tiny.c" 1
+ 181 00ca E491      		lpm r30, Z
+ 182               		
+ 183               	 ;  0 "" 2
+ 184               	.LVL12:
+ 185               	/* #NOAPP */
+ 186               	.LBE5:
+ 187 00cc A091 0000 		lds r26,glcd_buffer_selected
+ 188 00d0 B091 0000 		lds r27,glcd_buffer_selected+1
+ 189 00d4 A60F      		add r26,r22
+ 190 00d6 B71F      		adc r27,r23
+ 191 00d8 AD0F      		add r26,r29
+ 192 00da B11D      		adc r27,__zero_reg__
+ 193 00dc EC93      		st X,r30
+ 194               	.LVL13:
+  71:glcd/text_tiny.c **** #if defined(GLCD_DEVICE_AVR8)		
+ 195               		.loc 1 71 0 discriminator 3
+ 196 00de 8F5F      		subi r24,lo8(-(1))
+ 197               	.LVL14:
+ 198 00e0 00C0      		rjmp .L6
+ 199               		.cfi_endproc
+ 200               	.LFE8:
+ 202               	.global	glcd_tiny_draw_string
+ 204               	glcd_tiny_draw_string:
+ 205               	.LFB9:
+  80:glcd/text_tiny.c **** 
+  81:glcd/text_tiny.c **** void glcd_tiny_draw_string(uint8_t x, uint8_t line, char *str)
+  82:glcd/text_tiny.c **** {
+ 206               		.loc 1 82 0
+ 207               		.cfi_startproc
+ 208               	.LVL15:
+ 209 00e2 EF92      		push r14
+ 210               	.LCFI4:
+ 211               		.cfi_def_cfa_offset 3
+ 212               		.cfi_offset 14, -2
+ 213 00e4 FF92      		push r15
+ 214               	.LCFI5:
+ 215               		.cfi_def_cfa_offset 4
+ 216               		.cfi_offset 15, -3
+ 217 00e6 0F93      		push r16
+ 218               	.LCFI6:
+ 219               		.cfi_def_cfa_offset 5
+ 220               		.cfi_offset 16, -4
+ 221 00e8 1F93      		push r17
+ 222               	.LCFI7:
+ 223               		.cfi_def_cfa_offset 6
+ 224               		.cfi_offset 17, -5
+ 225 00ea CF93      		push r28
+ 226               	.LCFI8:
+ 227               		.cfi_def_cfa_offset 7
+ 228               		.cfi_offset 28, -6
+ 229 00ec DF93      		push r29
+ 230               	.LCFI9:
+ 231               		.cfi_def_cfa_offset 8
+ 232               		.cfi_offset 29, -7
+ 233               	/* prologue: function */
+ 234               	/* frame size = 0 */
+ 235               	/* stack size = 6 */
+ 236               	.L__stack_usage = 6
+ 237 00ee C82F      		mov r28,r24
+ 238 00f0 D62F      		mov r29,r22
+  83:glcd/text_tiny.c **** 	if (font_current.height >= 8) {
+ 239               		.loc 1 83 0
+ 240 00f2 8091 0000 		lds r24,font_current+3
+ 241               	.LVL16:
+ 242 00f6 8830      		cpi r24,lo8(8)
+ 243 00f8 00F4      		brsh .L9
+ 244 00fa 8A01      		movw r16,r20
+ 245               	.LBB8:
+ 246               	.LBB9:
+  84:glcd/text_tiny.c **** 		return;
+  85:glcd/text_tiny.c **** 	}
+  86:glcd/text_tiny.c **** 	while (*str) {
+  87:glcd/text_tiny.c **** 		glcd_tiny_draw_char(x, line, *str++);
+  88:glcd/text_tiny.c **** 		x += (font_current.width + 1);
+  89:glcd/text_tiny.c **** 		if ((x + font_current.width + 1) > GLCD_LCD_WIDTH) {
+  90:glcd/text_tiny.c **** 			x = 0; /* Ran out of this line */
+  91:glcd/text_tiny.c **** 			line++;
+  92:glcd/text_tiny.c **** 		}
+  93:glcd/text_tiny.c **** 		if (line >= (GLCD_LCD_HEIGHT/(font_current.height + 1)))
+ 247               		.loc 1 93 0
+ 248 00fc 80E3      		ldi r24,lo8(48)
+ 249 00fe E82E      		mov r14,r24
+ 250 0100 F12C      		mov r15,__zero_reg__
+ 251               	.LVL17:
+ 252               	.L11:
+  86:glcd/text_tiny.c **** 		glcd_tiny_draw_char(x, line, *str++);
+ 253               		.loc 1 86 0
+ 254 0102 F801      		movw r30,r16
+ 255 0104 4191      		ld r20,Z+
+ 256 0106 8F01      		movw r16,r30
+ 257               	.LVL18:
+ 258 0108 4423      		tst r20
+ 259 010a 01F0      		breq .L9
+ 260               	.LVL19:
+  87:glcd/text_tiny.c **** 		x += (font_current.width + 1);
+ 261               		.loc 1 87 0
+ 262 010c 6D2F      		mov r22,r29
+ 263 010e 8C2F      		mov r24,r28
+ 264 0110 0E94 0000 		call glcd_tiny_draw_char
+ 265               	.LVL20:
+  88:glcd/text_tiny.c **** 		if ((x + font_current.width + 1) > GLCD_LCD_WIDTH) {
+ 266               		.loc 1 88 0
+ 267 0114 8091 0000 		lds r24,font_current+2
+ 268 0118 91E0      		ldi r25,lo8(1)
+ 269 011a 980F      		add r25,r24
+ 270 011c C90F      		add r28,r25
+ 271               	.LVL21:
+  89:glcd/text_tiny.c **** 			x = 0; /* Ran out of this line */
+ 272               		.loc 1 89 0
+ 273 011e 90E0      		ldi r25,0
+ 274 0120 8C0F      		add r24,r28
+ 275 0122 911D      		adc r25,__zero_reg__
+ 276 0124 8435      		cpi r24,84
+ 277 0126 9105      		cpc r25,__zero_reg__
+ 278 0128 04F0      		brlt .L12
+ 279               	.LVL22:
+  91:glcd/text_tiny.c **** 		}
+ 280               		.loc 1 91 0
+ 281 012a DF5F      		subi r29,lo8(-(1))
+ 282               	.LVL23:
+  90:glcd/text_tiny.c **** 			line++;
+ 283               		.loc 1 90 0
+ 284 012c C0E0      		ldi r28,0
+ 285               	.LVL24:
+ 286               	.L12:
+ 287               		.loc 1 93 0
+ 288 012e 2D2F      		mov r18,r29
+ 289 0130 30E0      		ldi r19,0
+ 290 0132 6091 0000 		lds r22,font_current+3
+ 291 0136 70E0      		ldi r23,0
+ 292 0138 6F5F      		subi r22,-1
+ 293 013a 7F4F      		sbci r23,-1
+ 294 013c C701      		movw r24,r14
+ 295 013e 0E94 0000 		call __divmodhi4
+ 296 0142 2617      		cp r18,r22
+ 297 0144 3707      		cpc r19,r23
+ 298 0146 04F0      		brlt .L11
+ 299               	.LVL25:
+ 300               	.L9:
+ 301               	/* epilogue start */
+ 302               	.LBE9:
+ 303               	.LBE8:
+  94:glcd/text_tiny.c **** 			return; /* Ran out of space :( */
+  95:glcd/text_tiny.c **** 	}
+  96:glcd/text_tiny.c **** }
+ 304               		.loc 1 96 0
+ 305 0148 DF91      		pop r29
+ 306 014a CF91      		pop r28
+ 307 014c 1F91      		pop r17
+ 308 014e 0F91      		pop r16
+ 309 0150 FF90      		pop r15
+ 310 0152 EF90      		pop r14
+ 311 0154 0895      		ret
+ 312               		.cfi_endproc
+ 313               	.LFE9:
+ 315               	.global	glcd_tiny_draw_string_P
+ 317               	glcd_tiny_draw_string_P:
+ 318               	.LFB10:
+  97:glcd/text_tiny.c **** 
+  98:glcd/text_tiny.c **** #if defined(GLCD_DEVICE_AVR8)
+  99:glcd/text_tiny.c **** void glcd_tiny_draw_string_P(uint8_t x, uint8_t line, PGM_P str)
+ 100:glcd/text_tiny.c **** #else
+ 101:glcd/text_tiny.c **** void glcd_tiny_draw_string_P(uint8_t x, uint8_t line, const char *str)
+ 102:glcd/text_tiny.c **** #endif
+ 103:glcd/text_tiny.c **** {
+ 319               		.loc 1 103 0
+ 320               		.cfi_startproc
+ 321               	.LVL26:
+ 322 0156 EF92      		push r14
+ 323               	.LCFI10:
+ 324               		.cfi_def_cfa_offset 3
+ 325               		.cfi_offset 14, -2
+ 326 0158 FF92      		push r15
+ 327               	.LCFI11:
+ 328               		.cfi_def_cfa_offset 4
+ 329               		.cfi_offset 15, -3
+ 330 015a 0F93      		push r16
+ 331               	.LCFI12:
+ 332               		.cfi_def_cfa_offset 5
+ 333               		.cfi_offset 16, -4
+ 334 015c 1F93      		push r17
+ 335               	.LCFI13:
+ 336               		.cfi_def_cfa_offset 6
+ 337               		.cfi_offset 17, -5
+ 338 015e CF93      		push r28
+ 339               	.LCFI14:
+ 340               		.cfi_def_cfa_offset 7
+ 341               		.cfi_offset 28, -6
+ 342 0160 DF93      		push r29
+ 343               	.LCFI15:
+ 344               		.cfi_def_cfa_offset 8
+ 345               		.cfi_offset 29, -7
+ 346               	/* prologue: function */
+ 347               	/* frame size = 0 */
+ 348               	/* stack size = 6 */
+ 349               	.L__stack_usage = 6
+ 350 0162 F82E      		mov r15,r24
+ 351 0164 E62E      		mov r14,r22
+ 104:glcd/text_tiny.c **** 	if (font_current.height >= 8) {
+ 352               		.loc 1 104 0
+ 353 0166 8091 0000 		lds r24,font_current+3
+ 354               	.LVL27:
+ 355 016a 8830      		cpi r24,lo8(8)
+ 356 016c 00F4      		brsh .L14
+ 357 016e EA01      		movw r28,r20
+ 358               	.LBB14:
+ 359               	.LBB15:
+ 105:glcd/text_tiny.c **** 		return;
+ 106:glcd/text_tiny.c **** 	}
+ 107:glcd/text_tiny.c **** 	while (1) {
+ 108:glcd/text_tiny.c **** #if defined(GLCD_DEVICE_AVR8)
+ 109:glcd/text_tiny.c **** 		char c = pgm_read_byte(str++);
+ 110:glcd/text_tiny.c **** #else
+ 111:glcd/text_tiny.c **** 		char c = *(str++);
+ 112:glcd/text_tiny.c **** #endif
+ 113:glcd/text_tiny.c **** 		if (!c)
+ 114:glcd/text_tiny.c **** 			return;	
+ 115:glcd/text_tiny.c **** 				
+ 116:glcd/text_tiny.c **** 		glcd_tiny_draw_char(x, line, c);
+ 117:glcd/text_tiny.c **** 		
+ 118:glcd/text_tiny.c **** 		x += (font_current.width + 1);
+ 119:glcd/text_tiny.c **** 		if ((x + font_current.width + 1) > GLCD_LCD_WIDTH) {
+ 120:glcd/text_tiny.c **** 			x = 0; /* Ran out of this line */
+ 121:glcd/text_tiny.c **** 			line++;
+ 122:glcd/text_tiny.c **** 		}
+ 123:glcd/text_tiny.c **** 		if (line >= (GLCD_LCD_HEIGHT/(font_current.height + 1)))
+ 360               		.loc 1 123 0
+ 361 0170 00E3      		ldi r16,lo8(48)
+ 362 0172 10E0      		ldi r17,0
+ 363               	.LVL28:
+ 364               	.L18:
+ 365               	.LBB16:
+ 109:glcd/text_tiny.c **** #else
+ 366               		.loc 1 109 0
+ 367 0174 FE01      		movw r30,r28
+ 368               	/* #APP */
+ 369               	 ;  109 "glcd/text_tiny.c" 1
+ 370 0176 4491      		lpm r20, Z
+ 371               		
+ 372               	 ;  0 "" 2
+ 373               	.LVL29:
+ 374               	/* #NOAPP */
+ 375               	.LBE16:
+ 113:glcd/text_tiny.c **** 			return;	
+ 376               		.loc 1 113 0
+ 377 0178 4423      		tst r20
+ 378 017a 01F0      		breq .L14
+ 116:glcd/text_tiny.c **** 		
+ 379               		.loc 1 116 0
+ 380 017c 6E2D      		mov r22,r14
+ 381 017e 8F2D      		mov r24,r15
+ 382 0180 0E94 0000 		call glcd_tiny_draw_char
+ 383               	.LVL30:
+ 118:glcd/text_tiny.c **** 		if ((x + font_current.width + 1) > GLCD_LCD_WIDTH) {
+ 384               		.loc 1 118 0
+ 385 0184 8091 0000 		lds r24,font_current+2
+ 386 0188 91E0      		ldi r25,lo8(1)
+ 387 018a 980F      		add r25,r24
+ 388 018c F90E      		add r15,r25
+ 389               	.LVL31:
+ 119:glcd/text_tiny.c **** 			x = 0; /* Ran out of this line */
+ 390               		.loc 1 119 0
+ 391 018e 90E0      		ldi r25,0
+ 392 0190 8F0D      		add r24,r15
+ 393 0192 911D      		adc r25,__zero_reg__
+ 394 0194 8435      		cpi r24,84
+ 395 0196 9105      		cpc r25,__zero_reg__
+ 396 0198 04F0      		brlt .L17
+ 397               	.LVL32:
+ 121:glcd/text_tiny.c **** 		}
+ 398               		.loc 1 121 0
+ 399 019a E394      		inc r14
+ 400               	.LVL33:
+ 120:glcd/text_tiny.c **** 			line++;
+ 401               		.loc 1 120 0
+ 402 019c F12C      		mov r15,__zero_reg__
+ 403               	.LVL34:
+ 404               	.L17:
+ 405 019e 2196      		adiw r28,1
+ 406               	.LVL35:
+ 407               		.loc 1 123 0
+ 408 01a0 2E2D      		mov r18,r14
+ 409 01a2 30E0      		ldi r19,0
+ 410 01a4 6091 0000 		lds r22,font_current+3
+ 411 01a8 70E0      		ldi r23,0
+ 412 01aa 6F5F      		subi r22,-1
+ 413 01ac 7F4F      		sbci r23,-1
+ 414 01ae C801      		movw r24,r16
+ 415 01b0 0E94 0000 		call __divmodhi4
+ 416 01b4 2617      		cp r18,r22
+ 417 01b6 3707      		cpc r19,r23
+ 418 01b8 04F0      		brlt .L18
+ 419               	.LVL36:
+ 420               	.L14:
+ 421               	/* epilogue start */
+ 422               	.LBE15:
+ 423               	.LBE14:
+ 124:glcd/text_tiny.c **** 			return; /* Ran out of space :( */
+ 125:glcd/text_tiny.c **** 	}	
+ 126:glcd/text_tiny.c **** }
+ 424               		.loc 1 126 0
+ 425 01ba DF91      		pop r29
+ 426 01bc CF91      		pop r28
+ 427 01be 1F91      		pop r17
+ 428 01c0 0F91      		pop r16
+ 429 01c2 FF90      		pop r15
+ 430 01c4 EF90      		pop r14
+ 431 01c6 0895      		ret
+ 432               		.cfi_endproc
+ 433               	.LFE10:
+ 435               	.global	glcd_tiny_draw_string_ammend
+ 437               	glcd_tiny_draw_string_ammend:
+ 438               	.LFB11:
+ 127:glcd/text_tiny.c **** 
+ 128:glcd/text_tiny.c **** void glcd_tiny_draw_string_ammend(char *str) {
+ 439               		.loc 1 128 0
+ 440               		.cfi_startproc
+ 441               	.LVL37:
+ 442 01c8 CF93      		push r28
+ 443               	.LCFI16:
+ 444               		.cfi_def_cfa_offset 3
+ 445               		.cfi_offset 28, -2
+ 446 01ca DF93      		push r29
+ 447               	.LCFI17:
+ 448               		.cfi_def_cfa_offset 4
+ 449               		.cfi_offset 29, -3
+ 450               	/* prologue: function */
+ 451               	/* frame size = 0 */
+ 452               	/* stack size = 2 */
+ 453               	.L__stack_usage = 2
+ 454 01cc EC01      		movw r28,r24
+ 129:glcd/text_tiny.c **** 	glcd_scroll_line();
+ 455               		.loc 1 129 0
+ 456 01ce 0E94 0000 		call glcd_scroll_line
+ 457               	.LVL38:
+ 130:glcd/text_tiny.c **** 	glcd_tiny_draw_string(0, (GLCD_LCD_HEIGHT/8-1), str);
+ 458               		.loc 1 130 0
+ 459 01d2 AE01      		movw r20,r28
+ 460 01d4 65E0      		ldi r22,lo8(5)
+ 461 01d6 80E0      		ldi r24,0
+ 462 01d8 0E94 0000 		call glcd_tiny_draw_string
+ 463               	.LVL39:
+ 464               	/* epilogue start */
+ 131:glcd/text_tiny.c **** 	glcd_write();
+ 132:glcd/text_tiny.c **** }
+ 465               		.loc 1 132 0
+ 466 01dc DF91      		pop r29
+ 467 01de CF91      		pop r28
+ 468               	.LVL40:
+ 131:glcd/text_tiny.c **** 	glcd_write();
+ 469               		.loc 1 131 0
+ 470 01e0 0C94 0000 		jmp glcd_write
+ 471               	.LVL41:
+ 472               		.cfi_endproc
+ 473               	.LFE11:
+ 475               	.global	glcd_tiny_draw_string_ammend_P
+ 477               	glcd_tiny_draw_string_ammend_P:
+ 478               	.LFB12:
+ 133:glcd/text_tiny.c **** 
+ 134:glcd/text_tiny.c **** void glcd_tiny_draw_string_ammend_P(const char *str) {
+ 479               		.loc 1 134 0
+ 480               		.cfi_startproc
+ 481               	.LVL42:
+ 482 01e4 CF93      		push r28
+ 483               	.LCFI18:
+ 484               		.cfi_def_cfa_offset 3
+ 485               		.cfi_offset 28, -2
+ 486 01e6 DF93      		push r29
+ 487               	.LCFI19:
+ 488               		.cfi_def_cfa_offset 4
+ 489               		.cfi_offset 29, -3
+ 490               	/* prologue: function */
+ 491               	/* frame size = 0 */
+ 492               	/* stack size = 2 */
+ 493               	.L__stack_usage = 2
+ 494 01e8 EC01      		movw r28,r24
+ 135:glcd/text_tiny.c **** 	glcd_scroll_line();
+ 495               		.loc 1 135 0
+ 496 01ea 0E94 0000 		call glcd_scroll_line
+ 497               	.LVL43:
+ 136:glcd/text_tiny.c **** 	glcd_tiny_draw_string_P(0, (GLCD_LCD_HEIGHT/8-1), str);
+ 498               		.loc 1 136 0
+ 499 01ee AE01      		movw r20,r28
+ 500 01f0 65E0      		ldi r22,lo8(5)
+ 501 01f2 80E0      		ldi r24,0
+ 502 01f4 0E94 0000 		call glcd_tiny_draw_string_P
+ 503               	.LVL44:
+ 504               	/* epilogue start */
+ 137:glcd/text_tiny.c **** 	glcd_write();
+ 138:glcd/text_tiny.c **** }
+ 505               		.loc 1 138 0
+ 506 01f8 DF91      		pop r29
+ 507 01fa CF91      		pop r28
+ 508               	.LVL45:
+ 137:glcd/text_tiny.c **** 	glcd_write();
+ 509               		.loc 1 137 0
+ 510 01fc 0C94 0000 		jmp glcd_write
+ 511               	.LVL46:
+ 512               		.cfi_endproc
+ 513               	.LFE12:
+ 515               	.global	glcd_tiny_invert_line
+ 517               	glcd_tiny_invert_line:
+ 518               	.LFB13:
+ 139:glcd/text_tiny.c **** 
+ 140:glcd/text_tiny.c **** void glcd_tiny_invert_line(uint8_t line)
+ 141:glcd/text_tiny.c **** {
+ 519               		.loc 1 141 0
+ 520               		.cfi_startproc
+ 521               	.LVL47:
+ 522               	/* prologue: function */
+ 523               	/* frame size = 0 */
+ 524               	/* stack size = 0 */
+ 525               	.L__stack_usage = 0
+ 142:glcd/text_tiny.c **** 	glcd_invert_area(0,line*8,GLCD_LCD_WIDTH-1,8);
+ 526               		.loc 1 142 0
+ 527 0200 682F      		mov r22,r24
+ 528 0202 660F      		lsl r22
+ 529 0204 660F      		lsl r22
+ 530 0206 660F      		lsl r22
+ 531 0208 28E0      		ldi r18,lo8(8)
+ 532 020a 43E5      		ldi r20,lo8(83)
+ 533 020c 80E0      		ldi r24,0
+ 534               	.LVL48:
+ 535 020e 0C94 0000 		jmp glcd_invert_area
+ 536               	.LVL49:
+ 537               		.cfi_endproc
+ 538               	.LFE13:
+ 540               	.global	glcd_tiny_draw_char_xy
+ 542               	glcd_tiny_draw_char_xy:
+ 543               	.LFB14:
+ 143:glcd/text_tiny.c **** }
+ 144:glcd/text_tiny.c **** 
+ 145:glcd/text_tiny.c **** void glcd_tiny_draw_char_xy(uint8_t x, uint8_t y, char c)
+ 146:glcd/text_tiny.c **** {
+ 544               		.loc 1 146 0
+ 545               		.cfi_startproc
+ 546               	.LVL50:
+ 547 0212 BF92      		push r11
+ 548               	.LCFI20:
+ 549               		.cfi_def_cfa_offset 3
+ 550               		.cfi_offset 11, -2
+ 551 0214 CF92      		push r12
+ 552               	.LCFI21:
+ 553               		.cfi_def_cfa_offset 4
+ 554               		.cfi_offset 12, -3
+ 555 0216 DF92      		push r13
+ 556               	.LCFI22:
+ 557               		.cfi_def_cfa_offset 5
+ 558               		.cfi_offset 13, -4
+ 559 0218 EF92      		push r14
+ 560               	.LCFI23:
+ 561               		.cfi_def_cfa_offset 6
+ 562               		.cfi_offset 14, -5
+ 563 021a FF92      		push r15
+ 564               	.LCFI24:
+ 565               		.cfi_def_cfa_offset 7
+ 566               		.cfi_offset 15, -6
+ 567 021c 0F93      		push r16
+ 568               	.LCFI25:
+ 569               		.cfi_def_cfa_offset 8
+ 570               		.cfi_offset 16, -7
+ 571 021e 1F93      		push r17
+ 572               	.LCFI26:
+ 573               		.cfi_def_cfa_offset 9
+ 574               		.cfi_offset 17, -8
+ 575 0220 CF93      		push r28
+ 576               	.LCFI27:
+ 577               		.cfi_def_cfa_offset 10
+ 578               		.cfi_offset 28, -9
+ 579 0222 DF93      		push r29
+ 580               	.LCFI28:
+ 581               		.cfi_def_cfa_offset 11
+ 582               		.cfi_offset 29, -10
+ 583               	/* prologue: function */
+ 584               	/* frame size = 0 */
+ 585               	/* stack size = 9 */
+ 586               	.L__stack_usage = 9
+ 587 0224 D82E      		mov r13,r24
+ 588 0226 C62E      		mov r12,r22
+ 147:glcd/text_tiny.c **** 	uint8_t i;
+ 148:glcd/text_tiny.c **** 	uint8_t xvar, yvar;
+ 149:glcd/text_tiny.c **** 	uint8_t dat;
+ 150:glcd/text_tiny.c **** 	
+ 151:glcd/text_tiny.c **** 	/* Only works for fonts < 8 bits in height */
+ 152:glcd/text_tiny.c **** 	
+ 153:glcd/text_tiny.c **** 	/* Check all important bounds requirements are okay */
+ 154:glcd/text_tiny.c **** 	if ( (y >= GLCD_LCD_HEIGHT) || ((x+font_current.width) >= GLCD_LCD_WIDTH) || (font_current.height 
+ 589               		.loc 1 154 0
+ 590 0228 2FE2      		ldi r18,lo8(47)
+ 591 022a 2617      		cp r18,r22
+ 592 022c 00F4      		brsh .+2
+ 593 022e 00C0      		rjmp .L25
+ 594               		.loc 1 154 0 is_stmt 0 discriminator 1
+ 595 0230 2091 0000 		lds r18,font_current+2
+ 596 0234 90E0      		ldi r25,0
+ 597 0236 820F      		add r24,r18
+ 598 0238 911D      		adc r25,__zero_reg__
+ 599               	.LVL51:
+ 600 023a 8435      		cpi r24,84
+ 601 023c 9105      		cpc r25,__zero_reg__
+ 602 023e 04F0      		brlt .+2
+ 603 0240 00C0      		rjmp .L25
+ 604               		.loc 1 154 0 discriminator 2
+ 605 0242 8091 0000 		lds r24,font_current+3
+ 606 0246 8830      		cpi r24,lo8(8)
+ 607 0248 00F0      		brlo .+2
+ 608 024a 00C0      		rjmp .L25
+ 609               		.loc 1 154 0 discriminator 3
+ 610 024c 8091 0000 		lds r24,font_current+6
+ 611 0250 8111      		cpse r24,__zero_reg__
+ 612 0252 00C0      		rjmp .L25
+ 155:glcd/text_tiny.c **** 		return;
+ 156:glcd/text_tiny.c **** 	}		
+ 157:glcd/text_tiny.c **** 	if (c < font_current.start_char || c > font_current.end_char) {
+ 613               		.loc 1 157 0 is_stmt 1
+ 614 0254 8091 0000 		lds r24,font_current+4
+ 615 0258 4817      		cp r20,r24
+ 616 025a 00F0      		brlo .L32
+ 617               		.loc 1 157 0 is_stmt 0 discriminator 1
+ 618 025c 8091 0000 		lds r24,font_current+5
+ 619 0260 8417      		cp r24,r20
+ 620 0262 00F4      		brsh .L27
+ 621               	.L32:
+ 158:glcd/text_tiny.c **** 		c = '.';
+ 622               		.loc 1 158 0 is_stmt 1
+ 623 0264 4EE2      		ldi r20,lo8(46)
+ 624               	.LVL52:
+ 625               	.L27:
+ 159:glcd/text_tiny.c **** 	}
+ 160:glcd/text_tiny.c **** 	
+ 161:glcd/text_tiny.c **** 	xvar = x;
+ 162:glcd/text_tiny.c **** 	
+ 163:glcd/text_tiny.c **** 	for ( i = 0; i < font_current.width; i++ ) {
+ 626               		.loc 1 163 0
+ 627 0266 F12C      		mov r15,__zero_reg__
+ 628               	.LBB17:
+ 164:glcd/text_tiny.c **** #if defined(GLCD_DEVICE_AVR8)			
+ 165:glcd/text_tiny.c **** 		dat = pgm_read_byte( font_current.font_table + ((c - font_current.start_char) * (font_current.wid
+ 629               		.loc 1 165 0
+ 630 0268 C42F      		mov r28,r20
+ 631 026a D0E0      		ldi r29,0
+ 632               	.LVL53:
+ 633               	.L28:
+ 634 026c BF2C      		mov r11,r15
+ 635 026e BD0C      		add r11,r13
+ 636               	.LVL54:
+ 637               	.LBE17:
+ 163:glcd/text_tiny.c **** #if defined(GLCD_DEVICE_AVR8)			
+ 638               		.loc 1 163 0 discriminator 1
+ 639 0270 4091 0000 		lds r20,font_current+2
+ 640 0274 F416      		cp r15,r20
+ 641 0276 00F0      		brlo .L31
+ 166:glcd/text_tiny.c **** #else
+ 167:glcd/text_tiny.c **** 		dat = *( font_current.font_table + ((c - font_current.start_char) * (font_current.width)) + i );
+ 168:glcd/text_tiny.c **** #endif
+ 169:glcd/text_tiny.c **** 		for (yvar = 0; yvar < font_current.height; yvar++) {
+ 170:glcd/text_tiny.c **** 			glcd_set_pixel(xvar,y+yvar, (dat & (1<<yvar) ? 1 : 0) );
+ 171:glcd/text_tiny.c **** 		}
+ 172:glcd/text_tiny.c **** 		xvar++;
+ 173:glcd/text_tiny.c **** 	}
+ 174:glcd/text_tiny.c **** 	
+ 175:glcd/text_tiny.c **** 	glcd_update_bbox(x, y, x+font_current.width,y+font_current.height);
+ 642               		.loc 1 175 0
+ 643 0278 2091 0000 		lds r18,font_current+3
+ 644 027c 2C0D      		add r18,r12
+ 645 027e 4D0D      		add r20,r13
+ 646 0280 6C2D      		mov r22,r12
+ 647 0282 8D2D      		mov r24,r13
+ 648               	/* epilogue start */
+ 176:glcd/text_tiny.c **** 	
+ 177:glcd/text_tiny.c **** }
+ 649               		.loc 1 177 0
+ 650 0284 DF91      		pop r29
+ 651 0286 CF91      		pop r28
+ 652 0288 1F91      		pop r17
+ 653 028a 0F91      		pop r16
+ 654 028c FF90      		pop r15
+ 655               	.LVL55:
+ 656 028e EF90      		pop r14
+ 657 0290 DF90      		pop r13
+ 658               	.LVL56:
+ 659 0292 CF90      		pop r12
+ 660               	.LVL57:
+ 661 0294 BF90      		pop r11
+ 662               	.LVL58:
+ 175:glcd/text_tiny.c **** 	
+ 663               		.loc 1 175 0
+ 664 0296 0C94 0000 		jmp glcd_update_bbox
+ 665               	.LVL59:
+ 666               	.L31:
+ 667               	.LBB18:
+ 165:glcd/text_tiny.c **** #else
+ 668               		.loc 1 165 0
+ 669 029a 8091 0000 		lds r24,font_current+4
+ 670 029e 9E01      		movw r18,r28
+ 671 02a0 281B      		sub r18,r24
+ 672 02a2 3109      		sbc r19,__zero_reg__
+ 673 02a4 429F      		mul r20,r18
+ 674 02a6 8001      		movw r16,r0
+ 675 02a8 439F      		mul r20,r19
+ 676 02aa 100D      		add r17,r0
+ 677 02ac 1124      		clr __zero_reg__
+ 678 02ae 0F0D      		add r16,r15
+ 679 02b0 111D      		adc r17,__zero_reg__
+ 680 02b2 E091 0000 		lds r30,font_current
+ 681 02b6 F091 0000 		lds r31,font_current+1
+ 682 02ba E00F      		add r30,r16
+ 683 02bc F11F      		adc r31,r17
+ 684               	/* #APP */
+ 685               	 ;  165 "glcd/text_tiny.c" 1
+ 686 02be E491      		lpm r30, Z
+ 687               		
+ 688               	 ;  0 "" 2
+ 689               	.LVL60:
+ 690               	/* #NOAPP */
+ 691               	.LBE18:
+ 169:glcd/text_tiny.c **** 			glcd_set_pixel(xvar,y+yvar, (dat & (1<<yvar) ? 1 : 0) );
+ 692               		.loc 1 169 0
+ 693 02c0 E12C      		mov r14,__zero_reg__
+ 170:glcd/text_tiny.c **** 		}
+ 694               		.loc 1 170 0
+ 695 02c2 0E2F      		mov r16,r30
+ 696 02c4 10E0      		ldi r17,0
+ 697               	.LVL61:
+ 698               	.L29:
+ 169:glcd/text_tiny.c **** 			glcd_set_pixel(xvar,y+yvar, (dat & (1<<yvar) ? 1 : 0) );
+ 699               		.loc 1 169 0 discriminator 1
+ 700 02c6 8091 0000 		lds r24,font_current+3
+ 701 02ca E816      		cp r14,r24
+ 702 02cc 00F0      		brlo .L30
+ 703               	.LVL62:
+ 163:glcd/text_tiny.c **** #if defined(GLCD_DEVICE_AVR8)			
+ 704               		.loc 1 163 0 discriminator 2
+ 705 02ce F394      		inc r15
+ 706               	.LVL63:
+ 707 02d0 00C0      		rjmp .L28
+ 708               	.LVL64:
+ 709               	.L30:
+ 170:glcd/text_tiny.c **** 		}
+ 710               		.loc 1 170 0 discriminator 3
+ 711 02d2 A801      		movw r20,r16
+ 712 02d4 0E2C      		mov r0,r14
+ 713 02d6 00C0      		rjmp 2f
+ 714               		1:
+ 715 02d8 5595      		asr r21
+ 716 02da 4795      		ror r20
+ 717               		2:
+ 718 02dc 0A94      		dec r0
+ 719 02de 02F4      		brpl 1b
+ 720 02e0 4170      		andi r20,lo8(1)
+ 721 02e2 6E2D      		mov r22,r14
+ 722 02e4 6C0D      		add r22,r12
+ 723 02e6 8B2D      		mov r24,r11
+ 724 02e8 0E94 0000 		call glcd_set_pixel
+ 725               	.LVL65:
+ 169:glcd/text_tiny.c **** 			glcd_set_pixel(xvar,y+yvar, (dat & (1<<yvar) ? 1 : 0) );
+ 726               		.loc 1 169 0 discriminator 3
+ 727 02ec E394      		inc r14
+ 728               	.LVL66:
+ 729 02ee 00C0      		rjmp .L29
+ 730               	.LVL67:
+ 731               	.L25:
+ 732               	/* epilogue start */
+ 733               		.loc 1 177 0
+ 734 02f0 DF91      		pop r29
+ 735 02f2 CF91      		pop r28
+ 736 02f4 1F91      		pop r17
+ 737 02f6 0F91      		pop r16
+ 738 02f8 FF90      		pop r15
+ 739 02fa EF90      		pop r14
+ 740 02fc DF90      		pop r13
+ 741               	.LVL68:
+ 742 02fe CF90      		pop r12
+ 743               	.LVL69:
+ 744 0300 BF90      		pop r11
+ 745 0302 0895      		ret
+ 746               		.cfi_endproc
+ 747               	.LFE14:
+ 749               	.Letext0:
+ 750               		.file 2 "/usr/avr/include/stdint.h"
+ 751               		.file 3 "glcd/glcd.h"
+ 752               		.file 4 "glcd/unit_tests.h"
+ 753               		.file 5 "glcd/glcd_graphics.h"
+ 754               		.file 6 "glcd/glcd_controllers.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 text_tiny.c
+     /tmp/cc23nMD0.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc23nMD0.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc23nMD0.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc23nMD0.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc23nMD0.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc23nMD0.s:12     .text:0000000000000000 glcd_tiny_set_font
+     /tmp/cc23nMD0.s:51     .text:0000000000000018 glcd_tiny_draw_char
+     /tmp/cc23nMD0.s:204    .text:00000000000000e2 glcd_tiny_draw_string
+     /tmp/cc23nMD0.s:317    .text:0000000000000156 glcd_tiny_draw_string_P
+     /tmp/cc23nMD0.s:437    .text:00000000000001c8 glcd_tiny_draw_string_ammend
+     /tmp/cc23nMD0.s:477    .text:00000000000001e4 glcd_tiny_draw_string_ammend_P
+     /tmp/cc23nMD0.s:517    .text:0000000000000200 glcd_tiny_invert_line
+     /tmp/cc23nMD0.s:542    .text:0000000000000212 glcd_tiny_draw_char_xy
+
+UNDEFINED SYMBOLS
+font_current
+__divmodhi4
+glcd_update_bbox
+glcd_buffer_selected
+glcd_scroll_line
+glcd_write
+glcd_invert_area
+glcd_set_pixel
